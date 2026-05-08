@@ -1,0 +1,49 @@
+/* Portrait on tablets/phones → rotate prompt */
+@media (orientation: portrait) and (max-width: 1024px) {
+  .rotate-overlay { display: flex; }
+}
+
+/* Tablet landscape (768px+) */
+@media (min-width: 768px) {
+  :root {
+    --header-h: 64px;
+    --footer-h: 80px;
+  }
+  .options-grid {
+    gap: 14px;
+    max-width: 580px;
+  }
+}
+
+/* Large screens / interactive panels */
+@media (min-width: 1280px) {
+  .board {
+    max-width: 1100px;
+  }
+  .options-grid {
+    max-width: 620px;
+    gap: 18px;
+  }
+}
+
+/* Small landscape (height < 520px) — compact layout */
+@media (max-height: 520px) and (orientation: landscape) {
+  :root {
+    --header-h: 48px;
+    --footer-h: 60px;
+  }
+  .loading-screen    { gap: 12px; }
+  .explore-screen    { gap: 10px; }
+  .practice-screen   { gap: 8px; }
+  .feedback-screen   { gap: 10px; }
+  .completion-screen { gap: 12px; }
+  .feedback-icon     { width: 48px; height: 48px; font-size: 24px; }
+  .star              { font-size: clamp(28px, 5vw, 48px); }
+}
+
+/* Very narrow screens */
+@media (max-width: 480px) and (orientation: landscape) {
+  .board { width: 94%; }
+  .options-grid { max-width: 400px; gap: 8px; }
+  .btn-submit { padding: 12px 36px; }
+}

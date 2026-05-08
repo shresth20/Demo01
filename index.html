@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BODMAS — Math Learning Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/animations.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+  <!-- ═══ LAYER 5: Header (persistent) ═══ -->
+  <header id="header" class="header" role="banner">
+
+    <!-- LEFT: Progress bar -->
+    <div class="header__left">
+      <div class="progress-track">
+        <div class="progress-dots" id="progress-dots"
+             role="progressbar" aria-label="Question progress"
+             aria-valuenow="0" aria-valuemax="6" aria-valuetext="0 of 6">
+          <!-- dots injected by app.js -->
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Reset + Info + Language + Fullscreen -->
+    <div class="header__right">
+      <button class="icon-btn" id="btn-reset" aria-label="Reset game" title="Reset">
+        <img src="assets/icons/Reset_icon.svg" alt="" draggable="false">
+      </button>
+      <button class="icon-btn" id="btn-info" aria-label="Info" title="Info">
+        <img src="assets/icons/Info_icon.svg" alt="" draggable="false">
+      </button>
+      <button class="icon-btn" id="btn-globe" aria-label="Change language" title="Language">
+        <img src="assets/icons/Language_icon.svg" alt="" draggable="false">
+      </button>
+      <button class="icon-btn" id="btn-fullscreen" aria-label="Toggle fullscreen" title="Fullscreen">
+        <img src="assets/icons/Fullscreen_icon.svg" alt="" draggable="false">
+      </button>
+    </div>
+
+  </header>
+
+  <!-- ═══ LAYER 2: Board ═══ -->
+  <main id="board" class="board" role="main">
+
+    <!-- ═══ LAYER 4: Active content (replaced per screen) ═══ -->
+    <section id="content-area" aria-live="polite" aria-atomic="true" aria-label="Game content">
+      <!-- Populated by app.js renderScreen() -->
+    </section>
+  </main>
+
+  <!-- ═══ LAYER 3: Decorative assets — fixed positions, no animation ═══ -->
+  <div id="deco-layer" class="layer-deco" aria-hidden="true">
+
+    <!-- ── Top-left cluster ── -->
+    <div class="deco deco--times3-tl"><img src="assets/icons/×3.svg" alt="" draggable="false"></div>
+    <div class="deco deco--pencil">
+      <img src="assets/icons/Pencile.svg" alt="" draggable="false">
+    </div>
+    <div class="deco deco--eq-red-l"><img src="assets/icons/=.svg" alt="" draggable="false"></div>
+    <div class="deco deco--half-l"><img src="assets/icons/½.svg" alt="" draggable="false"></div>
+
+    <!-- ── Top-right cluster ── -->
+    <div class="deco deco--half-r"><img src="assets/icons/½.svg" alt="" draggable="false"></div>
+    <div class="deco deco--bodmas">
+      <img src="assets/icons/Group.svg" alt="" draggable="false">
+    </div>
+    <div class="deco deco--times-grn"><img src="assets/icons/×.svg" alt="" draggable="false"></div>
+    <div class="deco deco--eq-red-r"><img src="assets/icons/=.svg" alt="" draggable="false"></div>
+    <div class="deco deco--times3-tr"><img src="assets/icons/×3.svg" alt="" draggable="false"></div>
+
+    <!-- ── Bottom-right cluster ── -->
+    <!-- <div class="deco deco--plus-br"><img src="assets/icons/+.svg" alt="" draggable="false"></div> -->
+    <!-- <div class="deco deco--gt"><img src="assets/icons/Vector.svg" alt="" draggable="false"></div> -->
+    <div class="deco deco--calc">
+      <img src="assets/icons/Calculator.svg" alt="" draggable="false">
+    </div>
+    <!-- <div class="deco deco--pi"><img src="assets/icons/π.svg" alt="" draggable="false"></div> -->
+
+    <!-- ── Bottom-left cluster ── -->
+    <!-- <div class="deco deco--plus-bl"><img src="assets/icons/+.svg" alt="" draggable="false"></div> -->
+    <div class="deco deco--equaction">
+      <img src="assets/icons/Equaction.svg" alt="" draggable="false">
+    </div>
+
+  </div>
+
+  <!-- ═══ LAYER 5: Footer (persistent) ═══ -->
+  <footer id="footer" class="footer" role="contentinfo">
+    <button class="btn-submit" id="btn-submit" disabled aria-disabled="true">
+      Submit
+    </button>
+  </footer>
+
+  <!-- ═══ Portrait rotate overlay ═══ -->
+  <div id="rotate-overlay" class="rotate-overlay" aria-hidden="true" role="alert">
+    <svg width="80" height="80" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+      <rect x="20" y="10" width="40" height="60" rx="8" stroke="#1B3A6B" stroke-width="3" fill="none"/>
+      <circle cx="40" cy="62" r="3" fill="#1B3A6B"/>
+      <path d="M55 25 Q70 40 55 55" stroke="#F5B61A" stroke-width="3" stroke-linecap="round" fill="none"/>
+    </svg>
+    <p>Please rotate your device to landscape mode</p>
+  </div>
+
+  <!-- Anime.js CDN (user-requested) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+  <!-- App modules — load order matters -->
+  <script src="js/utils.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/activities.js"></script>
+  <script src="js/animations.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
