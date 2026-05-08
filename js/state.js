@@ -7,7 +7,6 @@ var GameState = {
   selectedAnswer:  null,
   isSubmitted:     false,
   isAnimating:     false,
-  exploreStep:     0,
 
   reset: function() {
     this.currentScreen   = 'loading';
@@ -16,7 +15,6 @@ var GameState = {
     this.selectedAnswer  = null;
     this.isSubmitted     = false;
     this.isAnimating     = false;
-    this.exploreStep     = 0;
   },
 
   canSubmit: function() {

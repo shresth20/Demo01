@@ -31,27 +31,6 @@ function animateScreenOut(el) {
   });
 }
 
-function startDecorativeFloats() {
-  if (!animeAvailable) return;
-  var decos = qsa('.deco');
-  decos.forEach(function(el) {
-    var dur    = 2200 + Math.random() * 1400;
-    var yAmt   = 6 + Math.random() * 6;
-    var rotAmt = 3 + Math.random() * 4;
-    var delay  = Math.random() * 1200;
-    anime({
-      targets: el,
-      translateY: [-yAmt, yAmt],
-      rotate: [-rotAmt, rotAmt],
-      duration: dur,
-      delay: delay,
-      direction: 'alternate',
-      loop: true,
-      easing: 'easeInOutSine'
-    });
-  });
-}
-
 function animateExploreHighlight(exprEl, highlightText) {
   if (!exprEl || !highlightText) return animeFallback();
   var text = exprEl.textContent;
@@ -221,14 +200,4 @@ function animateConfettiBurst(container, count) {
       });
     })();
   }
-}
-
-function animateLoadingBar(fillEl) {
-  if (!fillEl || !animeAvailable) return;
-  anime({
-    targets: fillEl,
-    width: ['0%', '100%'],
-    duration: 1800,
-    easing: 'easeOutQuad'
-  });
 }

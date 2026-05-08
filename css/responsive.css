@@ -6,8 +6,8 @@
 /* Tablet landscape (768px+) */
 @media (min-width: 768px) {
   :root {
-    --header-h: 64px;
-    --footer-h: 80px;
+    --header-h: 85px;
+    --footer-h: 75px;
   }
   .options-grid {
     gap: 14px;
@@ -16,9 +16,10 @@
 }
 
 /* Large screens / interactive panels */
-@media (min-width: 1280px) {
+@media (min-width: 1080px) {
   .board {
-    max-width: 1100px;
+    max-width: 1500px;
+    width: calc(100% - 86px);
   }
   .options-grid {
     max-width: 620px;
