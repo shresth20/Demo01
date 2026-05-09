@@ -29,16 +29,16 @@
 
     <!-- RIGHT: Reset + Info + Language + Fullscreen -->
     <div class="header__right">
-      <button class="icon-btn" id="btn-reset" aria-label="Reset game" title="Reset">
+      <button class="icon-btn" id="btn-reset" aria-label="Reset" title="Reset">
         <img src="assets/icons/Reset_icon.svg" alt="" draggable="false">
       </button>
-      <button class="icon-btn" id="btn-info" aria-label="Info" title="Info">
+      <button class="icon-btn" id="btn-info" aria-label="Info" title="How To Play">
         <img src="assets/icons/Info_icon.svg" alt="" draggable="false">
       </button>
-      <button class="icon-btn" id="btn-globe" aria-label="Change language" title="Language">
+      <button class="icon-btn" id="btn-globe" aria-label="Change language" title="Select Language">
         <img src="assets/icons/Language_icon.svg" alt="" draggable="false">
       </button>
-      <button class="icon-btn" id="btn-fullscreen" aria-label="Toggle fullscreen" title="Fullscreen">
+      <button class="icon-btn" id="btn-fullscreen" aria-label="Toggle fullscreen" title="Enter Fullscreen">
         <img src="assets/icons/Fullscreen_icon.svg" alt="" draggable="false">
       </button>
     </div>
@@ -52,7 +52,14 @@
     <section id="content-area" aria-live="polite" aria-atomic="true" aria-label="Game content">
       <!-- Populated by app.js renderScreen() -->
     </section>
+
   </main>
+
+  <!-- ═══ LAYER 6: Feedback (fixed, above all board layers) ═══ -->
+  <div id="feedback-overlay" class="feedback-overlay" hidden aria-live="polite" aria-atomic="true">
+    <div class="feedback-toast" id="feedback-toast"></div>
+    <img class="feedback-char-gif" id="feedback-char-gif" src="" alt="" draggable="false">
+  </div>
 
   <!-- ═══ LAYER 3: Decorative assets — fixed positions, no animation ═══ -->
   <div id="deco-layer" class="layer-deco" aria-hidden="true">
@@ -60,7 +67,7 @@
     <!-- ── Top-left cluster ── -->
     <div class="deco deco--times3-tl"><img src="assets/icons/×3.svg" alt="" draggable="false"></div>
     <div class="deco deco--pencil">
-      <img src="assets/icons/Pencile.svg" alt="" draggable="false">
+      <img src="assets/icons/Pencil.svg" alt="" draggable="false">
     </div>
     <div class="deco deco--times-grn-l"><img src="assets/icons/×.svg" alt="" draggable="false"></div>
     <div class="deco deco--eq-red-l"><img src="assets/icons/=.svg" alt="" draggable="false"></div>
@@ -102,6 +109,102 @@
       <path d="M55 25 Q70 40 55 55" stroke="#F5B61A" stroke-width="3" stroke-linecap="round" fill="none"/>
     </svg>
     <p>Please rotate your device to landscape mode</p>
+  </div>
+
+  <!-- ═══ Loader Overlay ═══ -->
+  <div id="loader-overlay" class="loader-overlay" aria-label="Loading">
+    <img class="loader-overlay__gif" src="assets/GIFs/loader.gif" alt="Loading BODMAS...">
+  </div>
+
+  <!-- ═══ How to Play Modal ═══ -->
+  <div id="htp-modal" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="htp-title">
+    <div class="modal-card" id="htp-card">
+      <button class="modal-close" id="modal-close" aria-label="Close How to Play">
+        <img src="assets/icons/close_popup.svg" alt="" draggable="false">
+      </button>
+      <h2 class="modal-title" id="htp-title">How to Play</h2>
+      <p class="modal-subtitle">Learn to solve maths using BODMAS order of operations!</p>
+      <ol class="modal-steps">
+        <li class="modal-step">
+          <span class="modal-step__num">1</span>
+          <span class="modal-step__text">Solve <strong>Brackets</strong> (B) first — expressions inside ( ) have highest priority.</span>
+        </li>
+        <li class="modal-step">
+          <span class="modal-step__num">2</span>
+          <span class="modal-step__text">Next tackle <strong>Orders</strong> (O) — powers like 2³ and square roots √.</span>
+        </li>
+        <li class="modal-step">
+          <span class="modal-step__num">3</span>
+          <span class="modal-step__text"><strong>Division</strong> (D) and <strong>Multiplication</strong> (M) — solve both left to right.</span>
+        </li>
+        <li class="modal-step">
+          <span class="modal-step__num">4</span>
+          <span class="modal-step__text"><strong>Addition</strong> (A) and <strong>Subtraction</strong> (S) — solve both left to right.</span>
+        </li>
+        <li class="modal-step">
+          <span class="modal-step__num">5</span>
+          <span class="modal-step__text">Select the correct answer from the four options given.</span>
+        </li>
+        <li class="modal-step">
+          <span class="modal-step__num">6</span>
+          <span class="modal-step__text">Click <strong>Submit</strong> to check your answer and earn stars!</span>
+        </li>
+      </ol>
+      <img class="modal-character" src="assets/images/Swiftee-right.png" alt="" aria-hidden="true" draggable="false">
+    </div>
+  </div>
+
+  <!-- ═══ Language Modal ═══ -->
+  <div id="lang-modal" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="lang-title">
+    <div class="modal-card" id="lang-card">
+      <!-- Select view -->
+      <div id="lang-select-view">
+        <button class="modal-close" id="lang-close" aria-label="Close language selector">
+          <img src="assets/icons/close_popup.svg" alt="" draggable="false">
+        </button>
+        <h2 class="modal-title" id="lang-title">Choose Your Language</h2>
+        <p class="modal-subtitle">Select the language you want to use in the app.</p>
+        <div class="lang-dropdown" id="lang-dropdown">
+          <button class="lang-trigger" id="lang-trigger" aria-expanded="false" aria-haspopup="listbox">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+            <span id="lang-current-text">English</span>
+            <svg class="lang-chevron" width="12" height="8" viewBox="0 0 12 8" fill="none" aria-hidden="true">
+              <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </button>
+          <ul class="lang-list" id="lang-list" role="listbox" aria-label="Language options" hidden>
+            <li class="lang-option lang-option--selected" role="option" aria-selected="true" data-lang="en" data-label="English">English</li>
+            <li class="lang-option" role="option" aria-selected="false" data-lang="hi" data-label="हिन्दी">हिन्दी</li>
+            <li class="lang-option" role="option" aria-selected="false" data-lang="gu" data-label="ગુજરાતી">ગુજરાતી</li>
+          </ul>
+        </div>
+        <div class="lang-actions">
+          <button class="btn-lang-cancel" id="btn-lang-cancel">Cancel</button>
+          <button class="btn-lang-apply" id="btn-lang-apply">Apply</button>
+        </div>
+      </div>
+      <!-- Confirm view (shown after Apply) -->
+      <div id="lang-confirm-view" hidden>
+        <h2 class="modal-title">Language Selected!</h2>
+        <p class="modal-subtitle-confirm">Your app is now in <strong id="lang-confirm-name" class="lang-highlight">English</strong>.<br>Let's get started!</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Summary Modal ═══ -->
+  <div id="summary-modal" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="summary-title">
+    <div class="modal-card summary-card" id="summary-card">
+      <h2 class="summary-modal-title" id="summary-title">BODMAS Pro!</h2>
+      <div class="summary-stars" id="summary-stars" aria-label="Stars earned"></div>
+      <div class="summary-score-badge">
+        <span class="summary-percent" id="summary-percent">100%</span>
+        <span class="summary-score-label">Accuracy</span>
+      </div>
+      <button class="btn-summary-play" id="btn-summary-play">Play Again</button>
+    </div>
   </div>
 
   <!-- Anime.js CDN (user-requested) -->

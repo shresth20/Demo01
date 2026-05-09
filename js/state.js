@@ -4,6 +4,7 @@ var GameState = {
   currentScreen:   'loading',
   currentQuestion: 0,
   score:           0,
+  wrongCount:      0,
   selectedAnswer:  null,
   isSubmitted:     false,
   isAnimating:     false,
@@ -12,6 +13,7 @@ var GameState = {
     this.currentScreen   = 'loading';
     this.currentQuestion = 0;
     this.score           = 0;
+    this.wrongCount      = 0;
     this.selectedAnswer  = null;
     this.isSubmitted     = false;
     this.isAnimating     = false;
@@ -23,7 +25,11 @@ var GameState = {
 
   recordAnswer: function() {
     var q = practiceQuestions[this.currentQuestion];
-    if (this.selectedAnswer === q.correctIndex) this.score += 1;
+    if (this.selectedAnswer === q.correctIndex) {
+      this.score += 1;
+    } else {
+      this.wrongCount += 1;
+    }
     this.isSubmitted = true;
   },
 

@@ -2,6 +2,12 @@
 
 var _exploreAbort = false;
 var _selectedCardEl = null;
+var _htpShownOnce = false;
+var _langSelected = 'en';
+var _langSelectedLabel = 'English';
+var _feedbackShowTimeout = null;
+var _feedbackTimeout = null;
+var _feedbackIsCorrect = null;
 
 /* ── Init ──────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', function() {
@@ -15,10 +21,35 @@ function attachPersistentListeners() {
   var btnReset      = qs('#btn-reset');
   var btnSubmit     = qs('#btn-submit');
   var btnFullscreen = qs('#btn-fullscreen');
+  var btnInfo       = qs('#btn-info');
+  var btnGlobe      = qs('#btn-globe');
+  var modalClose    = qs('#modal-close');
+  var htpOverlay    = qs('#htp-modal');
+  var langClose     = qs('#lang-close');
+  var langOverlay   = qs('#lang-modal');
 
   if (btnReset)      btnReset.addEventListener('click', handleReset);
   if (btnSubmit)     btnSubmit.addEventListener('click', handleSubmit);
   if (btnFullscreen) btnFullscreen.addEventListener('click', handleFullscreen);
+  if (btnInfo)       btnInfo.addEventListener('click', openHowToPlay);
+  if (btnGlobe)      btnGlobe.addEventListener('click', openLangModal);
+  if (modalClose)    modalClose.addEventListener('click', closeHowToPlay);
+  if (htpOverlay)    htpOverlay.addEventListener('click', function(e) {
+    if (e.target === htpOverlay) closeHowToPlay();
+  });
+  if (langClose)     langClose.addEventListener('click', closeLangModal);
+  if (langOverlay)   langOverlay.addEventListener('click', function(e) {
+    if (e.target === langOverlay) closeLangModal();
+  });
+
+  document.addEventListener('fullscreenchange', function() {
+    var btn = qs('#btn-fullscreen');
+    var img = btn && btn.querySelector('img');
+    if (!img) return;
+    img.src = document.fullscreenElement
+      ? 'assets/icons/Exit_Fullscreen_icon.svg'
+      : 'assets/icons/Fullscreen_icon.svg';
+  });
 }
 
 /* ── Screen transition ─────────────────────────────── */
@@ -26,6 +57,7 @@ function transitionToScreen(screenName) {
   if (GameState.isAnimating) return;
   GameState.isAnimating = true;
   _exploreAbort = true;
+  hideFeedback();
 
   var content = qs('#content-area');
   var out = animateScreenOut(content);
@@ -45,7 +77,11 @@ function transitionToScreen(screenName) {
     inDone.then(function() {
       GameState.isAnimating = false;
       if (screenName === 'explore') startExploreSequence();
-      if (screenName === 'loading') scheduleAutoAdvanceFromLoading();
+      if (screenName === 'loading') {
+        var loaderOv = qs('#loader-overlay');
+        if (loaderOv) loaderOv.classList.remove('loader--hidden');
+        scheduleAutoAdvanceFromLoading();
+      }
     });
   });
 }
@@ -59,8 +95,6 @@ function renderScreen(screenName) {
     case 'loading':   content.innerHTML = buildLoadingHTML();   break;
     case 'explore':   content.innerHTML = buildExploreHTML();   break;
     case 'practice':  content.innerHTML = buildPracticeHTML();  break;
-    case 'correct':   content.innerHTML = buildCorrectHTML();   break;
-    case 'wrong':     content.innerHTML = buildWrongHTML();     break;
     case 'complete':  content.innerHTML = buildCompleteHTML();  break;
   }
 
@@ -68,22 +102,12 @@ function renderScreen(screenName) {
   syncSubmitButton();
 
   if (screenName === 'practice')  attachPracticeListeners();
-  if (screenName === 'correct')   attachCorrectListeners();
-  if (screenName === 'wrong')     attachWrongListeners();
   if (screenName === 'complete')  attachCompleteListeners();
 }
 
 /* ── HTML builders ─────────────────────────────────── */
 function buildLoadingHTML() {
-  return [
-    '<div class="loading-screen">',
-      '<div class="loading-logo">BOD<span>MAS</span></div>',
-      '<div class="loading-tagline">Learn the order of operations!</div>',
-      '<div class="loading-bar-track">',
-        '<div class="loading-bar-fill" id="loading-bar"></div>',
-      '</div>',
-    '</div>'
-  ].join('');
+  return '<div class="loading-screen"></div>';
 }
 
 function buildExploreHTML() {
@@ -129,46 +153,8 @@ function buildPracticeHTML() {
   ].join('');
 }
 
-function buildCorrectHTML() {
-  var q = practiceQuestions[GameState.currentQuestion];
-  return [
-    '<div class="feedback-screen" id="feedback-correct">',
-      '<div class="feedback-icon feedback-icon--correct" aria-hidden="true">✓</div>',
-      '<div class="feedback-heading">Correct! 🎉</div>',
-      '<div class="feedback-rule">' + escapeText(q ? q.bodmasRule : '') + '</div>',
-      '<button class="btn-next" id="btn-next">',
-        GameState.currentQuestion >= practiceQuestions.length - 1 ? 'See Results 🏆' : 'Next Question →',
-      '</button>',
-    '</div>'
-  ].join('');
-}
-
-function buildWrongHTML() {
-  var q = practiceQuestions[GameState.currentQuestion];
-  return [
-    '<div class="feedback-screen" id="feedback-wrong">',
-      '<div class="feedback-icon feedback-icon--wrong" aria-hidden="true">✕</div>',
-      '<div class="feedback-heading">Oops! Try again 💪</div>',
-      '<div class="feedback-hint">Hint: ' + escapeText(q ? q.hint : '') + '</div>',
-      '<button class="btn-retry" id="btn-retry">Try Again</button>',
-    '</div>'
-  ].join('');
-}
-
 function buildCompleteHTML() {
-  var earned = GameState.score >= 5 ? 3 : GameState.score >= 3 ? 2 : 1;
-  var stars = '';
-  for (var i = 0; i < 3; i++) {
-    stars += '<span class="star" aria-hidden="true">' + (i < earned ? '⭐' : '☆') + '</span>';
-  }
-  return [
-    '<div class="completion-screen" id="completion-screen">',
-      '<div class="completion-heading">Amazing Work! 🎊</div>',
-      '<div class="stars-row" id="stars-row" aria-label="' + earned + ' out of 3 stars earned">' + stars + '</div>',
-      '<div class="completion-score">You scored <strong>' + GameState.score + '</strong> out of ' + practiceQuestions.length + '</div>',
-      '<button class="btn-play-again" id="btn-play-again">Play Again</button>',
-    '</div>'
-  ].join('');
+  return '<div></div>';
 }
 
 /* ── Listener attachment ───────────────────────────── */
@@ -181,33 +167,9 @@ function attachPracticeListeners() {
   });
 }
 
-function attachCorrectListeners() {
-  var btn = qs('#btn-next');
-  if (btn) btn.addEventListener('click', handleNext);
-
-  var screen = qs('#feedback-correct');
-  if (screen) {
-    setTimeout(function() {
-      animateStarParticles(screen, 8);
-    }, 200);
-  }
-}
-
-function attachWrongListeners() {
-  var btn = qs('#btn-retry');
-  if (btn) btn.addEventListener('click', handleTryAgain);
-}
-
 function attachCompleteListeners() {
-  var btn = qs('#btn-play-again');
-  if (btn) btn.addEventListener('click', handlePlayAgain);
-
-  var starsContainer = qs('#stars-row');
-  var screen = qs('#completion-screen');
-  if (starsContainer) animateCompletionStars(starsContainer, 3);
-  if (screen) setTimeout(function() { animateConfettiBurst(screen, 30); }, 350);
-
   playComplete();
+  setTimeout(openSummaryModal, 400);
 }
 
 /* ── Event handlers ────────────────────────────────── */
@@ -249,29 +211,30 @@ function handleSubmit() {
   GameState.isSubmitted = true;
   syncSubmitButton();
 
-  var delay = 900;
-  setTimeout(function() {
+  _feedbackShowTimeout = setTimeout(function() {
+    _feedbackShowTimeout = null;
     GameState.recordAnswer();
-    transitionToScreen(correct ? 'correct' : 'wrong');
-  }, delay);
+    showInlineFeedback(correct);
+  }, 600);
 }
 
-function handleNext() {
-  GameState.advance();
-  transitionToScreen(GameState.currentScreen);
-}
+function handleReset() {
+  if (GameState.currentScreen !== 'practice') return;
 
-function handleTryAgain() {
+  // Undo the recorded answer if feedback is currently showing
+  if (_feedbackIsCorrect !== null) {
+    if (_feedbackIsCorrect) {
+      GameState.score = Math.max(0, GameState.score - 1);
+    } else {
+      GameState.wrongCount = Math.max(0, GameState.wrongCount - 1);
+    }
+  }
+
+  hideFeedback();
   GameState.selectedAnswer = null;
   GameState.isSubmitted    = false;
   _selectedCardEl          = null;
   transitionToScreen('practice');
-}
-
-function handleReset() {
-  GameState.reset();
-  _selectedCardEl = null;
-  transitionToScreen('loading');
 }
 
 function handlePlayAgain() {
@@ -285,6 +248,105 @@ function handleFullscreen() {
   } else {
     document.exitFullscreen && document.exitFullscreen();
   }
+}
+
+/* ── Inline feedback ───────────────────────────────── */
+function showInlineFeedback(isCorrect) {
+  var overlay = qs('#feedback-overlay');
+  var toast   = qs('#feedback-toast');
+  var gif     = qs('#feedback-char-gif');
+  if (!overlay || !toast || !gif) return;
+
+  var q = practiceQuestions[GameState.currentQuestion];
+  _feedbackIsCorrect = isCorrect;
+
+  if (isCorrect) {
+    toast.className = 'feedback-toast';
+    toast.textContent = '🎉 ' + (q && q.bodmasRule ? q.bodmasRule : 'Correct!');
+    gif.src = 'assets/GIFs/correct.gif';
+    gif.alt = 'Correct';
+    gif.className = 'feedback-char-gif feedback-char-gif--correct';
+  } else {
+    toast.className = 'feedback-toast feedback-toast--wrong';
+    toast.textContent = '💪 Hint: ' + (q && q.hint ? q.hint : 'Not quite. Try again!');
+    gif.src = 'assets/GIFs/incorrect.gif';
+    gif.alt = 'Incorrect';
+    gif.className = 'feedback-char-gif';
+  }
+  overlay.hidden = false;
+
+  var isLastQuestion = GameState.currentQuestion === practiceQuestions.length - 1;
+  if (isCorrect && isLastQuestion) launchConfetti();
+
+  var delay = isCorrect ? 2500 : 2000;
+  _feedbackTimeout = setTimeout(function() {
+    _feedbackTimeout = null;
+    _feedbackIsCorrect = null;
+    overlay.hidden = true;
+    if (isCorrect) {
+      GameState.advance();
+      if (GameState.currentScreen === 'complete') {
+        renderProgressDots();
+        playComplete();
+        openSummaryModal();
+      } else {
+        transitionToScreen(GameState.currentScreen);
+      }
+    } else {
+      GameState.selectedAnswer = null;
+      GameState.isSubmitted    = false;
+      _selectedCardEl          = null;
+      transitionToScreen('practice');
+    }
+  }, delay);
+}
+
+function hideFeedback() {
+  if (_feedbackShowTimeout) { clearTimeout(_feedbackShowTimeout); _feedbackShowTimeout = null; }
+  if (_feedbackTimeout)     { clearTimeout(_feedbackTimeout);     _feedbackTimeout = null; }
+  var overlay = qs('#feedback-overlay');
+  if (overlay) overlay.hidden = true;
+  _feedbackIsCorrect = null;
+}
+
+function launchConfetti() {
+  var existing = document.querySelector('.celebration');
+  if (existing) existing.remove();
+
+  if (typeof window.matchMedia === 'function' && window.matchMedia('(orientation: portrait)').matches) {
+    return;
+  }
+
+  var el = document.createElement('div');
+  el.className = 'celebration';
+
+  var total    = 150;
+  var topCount = Math.floor(total * 0.35);
+
+  for (var i = 0; i < total; i++) {
+    var piece = document.createElement('div');
+    piece.className = 'confetti';
+    piece.style.left            = (Math.random() * 100) + 'vw';
+    piece.style.backgroundColor = 'hsl(' + Math.floor(Math.random() * 360) + ', 100%, 50%)';
+    piece.style.width           = (6 + Math.random() * 8) + 'px';
+    piece.style.height          = (6 + Math.random() * 8) + 'px';
+
+    if (i < topCount) {
+      piece.style.top                     = (Math.random() * 8) + '%';
+      piece.style.animationName           = 'confetti-stay';
+      piece.style.animationDuration       = (4 + Math.random() * 3) + 's';
+      piece.style.animationDelay          = (Math.random() * 2) + 's';
+      piece.style.animationTimingFunction = 'ease-out';
+      piece.style.animationFillMode       = 'forwards';
+    } else {
+      piece.style.animationDelay    = (Math.random() * 2) + 's';
+      piece.style.animationDuration = (2 + Math.random() * 2) + 's';
+    }
+    el.appendChild(piece);
+  }
+
+  document.body.appendChild(el);
+  setTimeout(function() { if (el.parentNode) el.remove(); }, 8000);
 }
 
 /* ── Explore sequence ──────────────────────────────── */
@@ -352,7 +414,13 @@ async function startExploreSequence() {
 function scheduleAutoAdvanceFromLoading() {
   setTimeout(function() {
     if (GameState.currentScreen === 'loading') {
+      var overlay = qs('#loader-overlay');
+      if (overlay) overlay.classList.add('loader--hidden');
       transitionToScreen('explore');
+      if (!_htpShownOnce) {
+        _htpShownOnce = true;
+        setTimeout(openHowToPlay, 500);
+      }
     }
   }, 2200);
 }
@@ -406,4 +474,171 @@ function escapeText(str) {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
+}
+
+/* ── How to Play modal ── */
+function openHowToPlay() {
+  var modal = qs('#htp-modal');
+  if (!modal) return;
+  modal.classList.add('modal--open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.addEventListener('keydown', handleModalKeydown);
+  var closeBtn = qs('#modal-close');
+  if (closeBtn) setTimeout(function() { closeBtn.focus(); }, 50);
+}
+
+function closeHowToPlay() {
+  var modal = qs('#htp-modal');
+  if (!modal) return;
+  modal.classList.remove('modal--open');
+  modal.setAttribute('aria-hidden', 'true');
+  document.removeEventListener('keydown', handleModalKeydown);
+  var btnInfo = qs('#btn-info');
+  if (btnInfo) btnInfo.focus();
+}
+
+function handleModalKeydown(e) {
+  if (e.key === 'Escape') closeHowToPlay();
+}
+
+/* ── Language modal ── */
+function openLangModal() {
+  var modal = qs('#lang-modal');
+  if (!modal) return;
+  _showLangSelectView();
+  modal.classList.add('modal--open');
+  modal.setAttribute('aria-hidden', 'false');
+  document.addEventListener('keydown', handleLangKeydown);
+  var trigger = qs('#lang-trigger');
+  if (trigger) setTimeout(function() { trigger.focus(); }, 50);
+}
+
+function closeLangModal() {
+  var modal = qs('#lang-modal');
+  if (!modal) return;
+  var list = qs('#lang-list');
+  if (list) list.hidden = true;
+  var trigger = qs('#lang-trigger');
+  if (trigger) trigger.setAttribute('aria-expanded', 'false');
+  modal.classList.remove('modal--open');
+  modal.setAttribute('aria-hidden', 'true');
+  document.removeEventListener('keydown', handleLangKeydown);
+  var btnGlobe = qs('#btn-globe');
+  if (btnGlobe) btnGlobe.focus();
+}
+
+function _showLangSelectView() {
+  var selectView = qs('#lang-select-view');
+  var confirmView = qs('#lang-confirm-view');
+  if (selectView)  selectView.hidden  = false;
+  if (confirmView) confirmView.hidden = true;
+
+  var trigger = qs('#lang-trigger');
+  var list = qs('#lang-list');
+  var currentText = qs('#lang-current-text');
+  var cancelBtn = qs('#btn-lang-cancel');
+  var applyBtn = qs('#btn-lang-apply');
+
+  if (currentText) currentText.textContent = _langSelectedLabel;
+  if (!trigger || !list) return;
+
+  list.hidden = true;
+  trigger.setAttribute('aria-expanded', 'false');
+
+  // Mark the currently selected option
+  qsa('.lang-option').forEach(function(opt) {
+    var isActive = opt.getAttribute('data-lang') === _langSelected;
+    opt.classList.toggle('lang-option--selected', isActive);
+    opt.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  });
+
+  trigger.onclick = function() {
+    var open = list.hidden;
+    list.hidden = !open;
+    trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  };
+
+  qsa('.lang-option').forEach(function(opt) {
+    opt.onclick = function() {
+      _langSelected = opt.getAttribute('data-lang');
+      _langSelectedLabel = opt.getAttribute('data-label');
+      if (currentText) currentText.textContent = _langSelectedLabel;
+      qsa('.lang-option').forEach(function(o) {
+        o.classList.remove('lang-option--selected');
+        o.setAttribute('aria-selected', 'false');
+      });
+      opt.classList.add('lang-option--selected');
+      opt.setAttribute('aria-selected', 'true');
+      list.hidden = true;
+      trigger.setAttribute('aria-expanded', 'false');
+    };
+  });
+
+  if (cancelBtn) cancelBtn.onclick = closeLangModal;
+  if (applyBtn) applyBtn.onclick = _applyLanguage;
+}
+
+function _applyLanguage() {
+  var selectView  = qs('#lang-select-view');
+  var confirmView = qs('#lang-confirm-view');
+  var confirmName = qs('#lang-confirm-name');
+  if (confirmName) confirmName.textContent = _langSelectedLabel;
+  if (selectView)  selectView.hidden  = true;
+  if (confirmView) confirmView.hidden  = false;
+  setTimeout(closeLangModal, 1800);
+}
+
+function handleLangKeydown(e) {
+  if (e.key === 'Escape') closeLangModal();
+}
+
+/* ── Summary modal ── */
+function openSummaryModal() {
+  var modal = qs('#summary-modal');
+  if (!modal) return;
+
+  var score = GameState.score;
+  var total = score + GameState.wrongCount;
+  var pct = total > 0 ? Math.round((score / total) * 100) : 0;
+  var earned = pct === 100 ? 3 : pct >= 80 ? 2 : pct >= 60 ? 1 : 0;
+
+  var titleEl = qs('#summary-title');
+  if (titleEl) {
+    titleEl.textContent = earned === 3 ? 'BODMAS Pro!' : earned === 2 ? 'Well Done!' : earned === 1 ? 'Keep Practicing!' : 'Try Again!';
+  }
+
+  var starsEl = qs('#summary-stars');
+  if (starsEl) {
+    var html = '';
+    for (var i = 0; i < 3; i++) {
+      var cls = 'summary-star' + (i < earned ? '' : ' summary-star--unearned');
+      html += '<img class="' + cls + '" src="assets/icons/star.svg" alt="' + (i < earned ? 'Earned star' : 'Unearned star') + '">';
+    }
+    starsEl.innerHTML = html;
+  }
+
+  var pctEl = qs('#summary-percent');
+  if (pctEl) pctEl.textContent = pct + '%';
+
+  var playBtn = qs('#btn-summary-play');
+  if (playBtn) {
+    playBtn.onclick = function() {
+      closeSummaryModal();
+      handlePlayAgain();
+    };
+  }
+
+  modal.onclick = function(e) {
+    if (e.target === modal) closeSummaryModal();
+  };
+
+  modal.classList.add('modal--open');
+  modal.setAttribute('aria-hidden', 'false');
+}
+
+function closeSummaryModal() {
+  var modal = qs('#summary-modal');
+  if (!modal) return;
+  modal.classList.remove('modal--open');
+  modal.setAttribute('aria-hidden', 'true');
 }
