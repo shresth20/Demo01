@@ -3,18 +3,61 @@
 var _exploreAbort = false;
 var _selectedCardEl = null;
 var _htpShownOnce = false;
-var _langSelected = 'en';
-var _langSelectedLabel = 'English';
 var _feedbackShowTimeout = null;
 var _feedbackTimeout = null;
 var _feedbackIsCorrect = null;
 
 /* ── Init ──────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', function() {
-  renderProgressDots();
-  attachPersistentListeners();
-  transitionToScreen('loading');
+  I18n.load(function(lang) {
+    document.documentElement.lang = lang;
+    applyStaticTranslations();
+    renderProgressDots();
+    attachPersistentListeners();
+    transitionToScreen('loading');
+  });
 });
+
+/* ── Apply translations to all static DOM elements ─── */
+function applyStaticTranslations() {
+  /* How to Play modal */
+  _setText('#htp-title',    I18n.t('bodmasHtpTitle'));
+  _setText('#htp-subtitle', I18n.t('bodmasHtpSubtitle'));
+  _setHTML('#htp-step-1',   I18n.t('bodmasHtpStep1'));
+  _setHTML('#htp-step-2',   I18n.t('bodmasHtpStep2'));
+  _setHTML('#htp-step-3',   I18n.t('bodmasHtpStep3'));
+  _setHTML('#htp-step-4',   I18n.t('bodmasHtpStep4'));
+  _setText('#htp-step-5',   I18n.t('bodmasHtpStep5'));
+  _setHTML('#htp-step-6',   I18n.t('bodmasHtpStep6'));
+
+  /* Language modal */
+  _setText('#lang-title',    I18n.t('langPopupTitle'));
+  _setText('#lang-subtitle', I18n.t('langPopupSubtitle'));
+  _setText('#btn-lang-cancel', I18n.t('cancelButton'));
+  _setText('#btn-lang-apply',  I18n.t('applyButton'));
+  _setText('#lang-confirm-title', I18n.t('langSelectedTitle'));
+
+  /* Summary modal static labels */
+  _setText('#summary-accuracy-label', I18n.t('bodmasAccuracy'));
+  _setText('#btn-summary-play', I18n.t('playAgainButton') || I18n.t('bodmasWellDone') || 'Play Again');
+
+  /* Footer submit button */
+  _setText('#btn-submit', I18n.t('bodmasSubmit'));
+
+  /* Rotate overlay */
+  var rotEl = qs('#rotate-overlay p');
+  if (rotEl) rotEl.textContent = I18n.t('bodmasRotateMsg');
+}
+
+function _setText(sel, text) {
+  var el = qs(sel);
+  if (el && typeof text === 'string') el.textContent = text;
+}
+
+function _setHTML(sel, html) {
+  var el = qs(sel);
+  if (el && typeof html === 'string') el.innerHTML = html;
+}
 
 /* ── Persistent listeners (header/footer — attached once) ── */
 function attachPersistentListeners() {
@@ -113,7 +156,7 @@ function buildLoadingHTML() {
 function buildExploreHTML() {
   return [
     '<div class="explore-screen">',
-      '<div class="explore-label">Explore Mode — How BODMAS works</div>',
+      '<div class="explore-label">' + escapeText(I18n.t('bodmasExploreLabel')) + '</div>',
       '<div class="explore-expression-wrap">',
         '<div class="explore-expression" id="explore-expr"></div>',
       '</div>',
@@ -122,7 +165,7 @@ function buildExploreHTML() {
       '</div>',
       '<div class="explore-step-counter" id="explore-step-counter"></div>',
       '<button class="btn-start-practice" id="btn-start-practice">',
-        'Start Practice →',
+        escapeText(I18n.t('bodmasStartPractice')),
       '</button>',
     '</div>'
   ].join('');
@@ -130,13 +173,18 @@ function buildExploreHTML() {
 
 function buildPracticeHTML() {
   var q = practiceQuestions[GameState.currentQuestion];
-  if (!q) return '<div style="padding:2rem;text-align:center">All done!</div>';
+  if (!q) return '<div style="padding:2rem;text-align:center">' + escapeText(I18n.t('bodmasPro')) + '</div>';
+
+  var label = I18n.t('bodmasPracticeOf', {
+    current: GameState.currentQuestion + 1,
+    total:   practiceQuestions.length
+  });
 
   var optCards = q.options.map(function(opt, i) {
     return [
       '<button class="option-card" role="radio" aria-checked="false"',
         ' data-index="' + i + '"',
-        ' aria-label="Answer option: ' + opt + '">',
+        ' aria-label="' + escapeText(I18n.t('bodmasHtpStep5').replace(/<[^>]+>/g, '')) + ': ' + opt + '">',
         opt,
       '</button>'
     ].join('');
@@ -144,9 +192,9 @@ function buildPracticeHTML() {
 
   return [
     '<div class="practice-screen">',
-      '<div class="practice-q-label">Question ' + (GameState.currentQuestion + 1) + ' of ' + practiceQuestions.length + '</div>',
+      '<div class="practice-q-label">' + escapeText(label) + '</div>',
       '<div class="practice-expression">' + escapeText(q.expression) + '</div>',
-      '<div class="options-grid" role="radiogroup" aria-label="Answer options" id="options-grid">',
+      '<div class="options-grid" role="radiogroup" aria-label="' + escapeText(I18n.t('bodmasHtpStep5').replace(/<[^>]+>/g, '')) + '" id="options-grid">',
         optCards,
       '</div>',
     '</div>'
@@ -219,7 +267,6 @@ function handleSubmit() {
 function handleReset() {
   if (GameState.currentScreen !== 'practice') return;
 
-  // Undo the recorded answer if feedback is currently showing
   if (_feedbackIsCorrect !== null) {
     if (_feedbackIsCorrect) {
       GameState.score = Math.max(0, GameState.score - 1);
@@ -259,14 +306,16 @@ function showInlineFeedback(isCorrect) {
   _feedbackIsCorrect = isCorrect;
 
   if (isCorrect) {
+    var rule = (q && q.id) ? I18n.t('bodmasRule_' + q.id) : (q && q.bodmasRule ? q.bodmasRule : 'Correct!');
     toast.className = 'feedback-toast';
-    toast.textContent = '🎉 ' + (q && q.bodmasRule ? q.bodmasRule : 'Correct!');
+    toast.textContent = I18n.t('bodmasCorrectPrefix') + rule;
     gif.src = 'assets/GIFs/correct.gif';
     gif.alt = 'Correct';
     gif.className = 'feedback-char-gif feedback-char-gif--correct';
   } else {
+    var hint = (q && q.id) ? I18n.t('bodmasHint_' + q.id) : (q && q.hint ? q.hint : 'Try again!');
     toast.className = 'feedback-toast feedback-toast--wrong';
-    toast.textContent = '💪 Hint: ' + (q && q.hint ? q.hint : 'Not quite. Try again!');
+    toast.textContent = I18n.t('bodmasHintPrefix') + hint;
     gif.src = 'assets/GIFs/incorrect.gif';
     gif.alt = 'Incorrect';
     gif.className = 'feedback-char-gif';
@@ -355,11 +404,17 @@ async function startExploreSequence() {
 
   if (!exprEl || !annoEl) return;
 
+  var annoKeys = [
+    'bodmasExploreAnno1', 'bodmasExploreAnno2', 'bodmasExploreAnno3',
+    'bodmasExploreAnno4', 'bodmasExploreAnno5', 'bodmasExploreAnno6'
+  ];
+
   for (var i = 0; i < exploreSteps.length; i++) {
     if (_exploreAbort || GameState.currentScreen !== 'explore') return;
 
     var step = exploreSteps[i];
-    if (counter) counter.textContent = 'Step ' + (i + 1) + ' of ' + exploreSteps.length;
+    var annoText = I18n.t(annoKeys[i] || 'bodmasExploreAnno1');
+    if (counter) counter.textContent = I18n.t('bodmasStepOf', { current: i + 1, total: exploreSteps.length });
 
     exprEl.textContent = step.expression;
     annoEl.style.opacity = '0';
@@ -371,7 +426,7 @@ async function startExploreSequence() {
 
     if (_exploreAbort || GameState.currentScreen !== 'explore') return;
 
-    annoEl.textContent = step.annotation;
+    annoEl.textContent = annoText;
     animateExploreAnnotation(annoEl);
 
     await wait(1000);
@@ -404,7 +459,7 @@ async function startExploreSequence() {
     });
   }
 
-  if (counter) counter.textContent = 'Ready to practice!';
+  if (counter) counter.textContent = I18n.t('bodmasReadyLabel');
 }
 
 /* ── Loading auto-advance ──────────────────────────── */
@@ -525,20 +580,40 @@ function closeLangModal() {
 }
 
 function _showLangSelectView() {
-  var selectView = qs('#lang-select-view');
+  var selectView  = qs('#lang-select-view');
   var confirmView = qs('#lang-confirm-view');
   if (selectView)  selectView.hidden  = false;
   if (confirmView) confirmView.hidden = true;
 
-  var trigger = qs('#lang-trigger');
-  var list = qs('#lang-list');
+  var trigger     = qs('#lang-trigger');
+  var list        = qs('#lang-list');
   var currentText = qs('#lang-current-text');
-  var cancelBtn = qs('#btn-lang-cancel');
-  var applyBtn = qs('#btn-lang-apply');
+  var cancelBtn   = qs('#btn-lang-cancel');
+  var applyBtn    = qs('#btn-lang-apply');
 
-  var _originalLang = _langSelected;
+  /* Populate dropdown from I18n supported languages (all 5, native names) */
+  var supported = I18n.getSupportedLanguages();
+  if (list) {
+    list.innerHTML = '';
+    var activeLang = I18n.getLang();
+    Object.keys(supported).forEach(function(code) {
+      var nativeName = supported[code];
+      var li = document.createElement('li');
+      li.className = 'lang-option' + (code === activeLang ? ' lang-option--selected' : '');
+      li.setAttribute('role', 'option');
+      li.setAttribute('aria-selected', code === activeLang ? 'true' : 'false');
+      li.setAttribute('data-lang', code);
+      li.setAttribute('data-label', nativeName);
+      li.textContent = nativeName;
+      list.appendChild(li);
+    });
+  }
 
-  if (currentText) currentText.textContent = _langSelectedLabel;
+  var _pendingLang      = I18n.getLang();
+  var _pendingLabel     = supported[_pendingLang] || _pendingLang;
+  var _originalLang     = _pendingLang;
+
+  if (currentText) currentText.textContent = _pendingLabel;
   if (!trigger || !list) return;
 
   list.hidden = true;
@@ -546,20 +621,11 @@ function _showLangSelectView() {
 
   function _syncApplyBtn() {
     if (!applyBtn) return;
-    var diff = _langSelected !== _originalLang;
-    applyBtn.disabled = !diff;
-    applyBtn.setAttribute('aria-disabled', diff ? 'false' : 'true');
+    var changed = _pendingLang !== _originalLang;
+    applyBtn.disabled = !changed;
+    applyBtn.setAttribute('aria-disabled', changed ? 'false' : 'true');
   }
-
-  // Apply starts disabled (nothing has changed yet)
   _syncApplyBtn();
-
-  // Mark the currently selected option
-  qsa('.lang-option').forEach(function(opt) {
-    var isActive = opt.getAttribute('data-lang') === _langSelected;
-    opt.classList.toggle('lang-option--selected', isActive);
-    opt.setAttribute('aria-selected', isActive ? 'true' : 'false');
-  });
 
   trigger.onclick = function() {
     var open = list.hidden;
@@ -567,39 +633,74 @@ function _showLangSelectView() {
     trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
   };
 
-  qsa('.lang-option').forEach(function(opt) {
-    opt.onclick = function() {
-      _langSelected = opt.getAttribute('data-lang');
-      _langSelectedLabel = opt.getAttribute('data-label');
-      if (currentText) currentText.textContent = _langSelectedLabel;
-      qsa('.lang-option').forEach(function(o) {
-        o.classList.remove('lang-option--selected');
-        o.setAttribute('aria-selected', 'false');
-      });
-      opt.classList.add('lang-option--selected');
-      opt.setAttribute('aria-selected', 'true');
-      list.hidden = true;
-      trigger.setAttribute('aria-expanded', 'false');
-      _syncApplyBtn();
-    };
-  });
+  list.onclick = function(e) {
+    var opt = e.target.closest('.lang-option');
+    if (!opt) return;
+    _pendingLang  = opt.getAttribute('data-lang');
+    _pendingLabel = opt.getAttribute('data-label');
+    if (currentText) currentText.textContent = _pendingLabel;
+    qsa('.lang-option', list).forEach(function(o) {
+      o.classList.remove('lang-option--selected');
+      o.setAttribute('aria-selected', 'false');
+    });
+    opt.classList.add('lang-option--selected');
+    opt.setAttribute('aria-selected', 'true');
+    list.hidden = true;
+    trigger.setAttribute('aria-expanded', 'false');
+    _syncApplyBtn();
+  };
 
   if (cancelBtn) cancelBtn.onclick = function() {
-    _langSelected = _originalLang;
-    _langSelectedLabel = (qs('.lang-option[data-lang="' + _originalLang + '"]') || {getAttribute: function(){return _langSelectedLabel;}}).getAttribute('data-label') || _langSelectedLabel;
     closeLangModal();
   };
-  if (applyBtn) applyBtn.onclick = _applyLanguage;
+
+  if (applyBtn) applyBtn.onclick = function() {
+    _applyLanguage(_pendingLang, _pendingLabel);
+  };
 }
 
-function _applyLanguage() {
+function _applyLanguage(langCode, langLabel) {
+  /* Commit the new language */
+  I18n.setLang(langCode);
+
+  /* Show the confirmation view */
   var selectView  = qs('#lang-select-view');
   var confirmView = qs('#lang-confirm-view');
-  var confirmName = qs('#lang-confirm-name');
-  if (confirmName) confirmName.textContent = _langSelectedLabel;
-  if (selectView)  selectView.hidden  = true;
-  if (confirmView) confirmView.hidden  = false;
-  setTimeout(closeLangModal, 1800);
+  var confirmTitle = qs('#lang-confirm-title');
+
+  if (confirmTitle) confirmTitle.textContent = I18n.t('langSelectedTitle');
+
+  var msgEl = qs('#lang-confirm-msg');
+  if (msgEl) {
+    var msgTemplate = I18n.t('langSelectedMessageStart');
+    var parts = msgTemplate.split('{language}');
+    var before = parts[0] || '';
+    var after  = parts.length > 1 ? parts[1] : '';
+    msgEl.innerHTML =
+      escapeText(before) +
+      '<strong class="lang-highlight">' + escapeText(langLabel) + '</strong>' +
+      escapeText(after) +
+      '<br><span>' + escapeText(I18n.t('langSelectedMessageEnd')) + '</span>';
+  }
+
+  if (selectView)   selectView.hidden  = true;
+  if (confirmView)  confirmView.hidden = false;
+
+  /* After modal closes: apply all translations + re-render current screen */
+  setTimeout(function() {
+    closeLangModal();
+    _exploreAbort = true;   // stop any running explore sequence
+    /* Reset pending selection so stale _selectedCardEl doesn't linger */
+    GameState.selectedAnswer = null;
+    GameState.isSubmitted    = false;
+    _selectedCardEl          = null;
+    applyStaticTranslations();
+    renderScreen(GameState.currentScreen);
+    if (GameState.currentScreen === 'explore') {
+      _exploreAbort = false;
+      startExploreSequence();
+    }
+  }, 1800);
 }
 
 function handleLangKeydown(e) {
@@ -613,12 +714,13 @@ function openSummaryModal() {
 
   var score = GameState.score;
   var total = score + GameState.wrongCount;
-  var pct = total > 0 ? Math.round((score / total) * 100) : 0;
+  var pct   = total > 0 ? Math.round((score / total) * 100) : 0;
   var earned = pct === 100 ? 3 : pct >= 80 ? 2 : pct >= 60 ? 1 : 0;
 
   var titleEl = qs('#summary-title');
   if (titleEl) {
-    titleEl.textContent = earned === 3 ? 'BODMAS Pro!' : earned === 2 ? 'Well Done!' : earned === 1 ? 'Keep Practicing!' : 'Try Again!';
+    var titleKey = earned === 3 ? 'bodmasPro' : earned === 2 ? 'bodmasWellDone' : earned === 1 ? 'bodmasKeepPracticing' : 'bodmasTryAgain';
+    titleEl.textContent = I18n.t(titleKey);
   }
 
   var starsEl = qs('#summary-stars');
@@ -634,8 +736,12 @@ function openSummaryModal() {
   var pctEl = qs('#summary-percent');
   if (pctEl) pctEl.textContent = pct + '%';
 
+  var accEl = qs('#summary-accuracy-label');
+  if (accEl) accEl.textContent = I18n.t('bodmasAccuracy');
+
   var playBtn = qs('#btn-summary-play');
   if (playBtn) {
+    playBtn.textContent = I18n.t('playAgainButton') || 'Play Again';
     playBtn.onclick = function() {
       closeSummaryModal();
       handlePlayAgain();
