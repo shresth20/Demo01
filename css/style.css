@@ -1,3 +1,25 @@
+@font-face {
+  font-family: 'Lilita One';
+  src: url('../assets/fonts/lilita_one/lilitaone-regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Nunito';
+  src: url('../assets/fonts/nunito/nunito-variablefont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Nunito';
+  src: url('../assets/fonts/nunito/nunito-italic-variablefont_wght.ttf') format('truetype');
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
 :root {
   --color-bg: #FFFEF6;
   --color-board: #FFFFFF;
@@ -15,12 +37,28 @@
   --color-border: #BDBDBD;
   --color-shadow-lg: rgba(0,0,0,0.13);
 
-  --font-primary: 'Nunito', system-ui, -apple-system, sans-serif;
-  --font-size-sm: clamp(11px, 1.2vw, 13px);
-  --font-size-base: clamp(13px, 1.5vw, 16px);
-  --font-size-lg: clamp(15px, 1.9vw, 20px);
-  --font-size-xl: clamp(20px, 2.8vw, 28px);
-  --font-size-expr: clamp(24px, 3.8vw, 40px);
+  /* Lilita One: titles & headers — weight 400 only (naturally bold display) */
+  --font-primary: 'Lilita One', system-ui, sans-serif;
+  /* Nunito: body & normal text — supports variable weight 100–900 */
+  --font-accent: 'Nunito', system-ui, -apple-system, sans-serif;
+
+  --font-weight-title: 500;
+  --font-weight-body:  500;
+
+  /* Popup font sizes */
+  --font-size-popup-body:  clamp(14px, 1.5vw, 18px);
+  --font-size-popup-title: clamp(27px, 2.5vw, 30px);
+
+  /* Game-content font sizes */
+  --font-size-game-body:  clamp(18px, 2vw, 21px);
+  --font-size-game-title: clamp(27px, 3vw, 36px);
+
+  /* Legacy aliases — kept for backward compat, updated to new minimums */
+  --font-size-sm:   clamp(14px, 1.5vw, 17px);
+  --font-size-base: clamp(14px, 1.5vw, 17px);
+  --font-size-lg:   clamp(18px, 2vw, 23px);
+  --font-size-xl:   clamp(27px, 3vw, 36px);
+  --font-size-expr: clamp(30px, 4vw, 48px);
 
   --space-xs: 4px;
   --space-sm: 8px;
@@ -53,8 +91,8 @@
 html, body { width: 100%; height: 100%; overflow: hidden; }
 
 body {
-  font-family: var(--font-primary);
-  font-size: var(--font-size-base);
+  font-family: var(--font-accent);
+  font-size: var(--font-size-popup-body);
   background: var(--color-bg);
   color: var(--color-navy);
   position: relative;
@@ -189,9 +227,9 @@ body {
 .btn-submit {
   background: var(--color-submit);
   color: var(--color-navy);
-  font-family: var(--font-primary);
-  font-size: var(--font-size-lg);
-  font-weight: 800;
+  font-family: var(--font-accent);
+  font-size: var(--font-size-game-body);
+  font-weight: var(--font-weight-body);
   border: none;
   outline: none;
   border-radius: var(--btn-radius);
@@ -271,7 +309,8 @@ body {
   text-align: center;
 }
 .explore-label {
-  font-size: clamp(10px,1.2vw,13px); font-weight: 800;
+  font-family: var(--font-accent);
+  font-size: var(--font-size-game-body); font-weight: var(--font-weight-body);
   color: rgba(27,58,107,0.45); text-transform: uppercase; letter-spacing: 0.12em;
 }
 .explore-expression-wrap {
@@ -279,8 +318,9 @@ body {
   display: flex; align-items: center; justify-content: center;
 }
 .explore-expression {
+  font-family: var(--font-primary);
   font-size: var(--font-size-expr);
-  font-weight: 900; color: var(--color-navy);
+  font-weight: var(--font-weight-title); color: var(--color-navy);
   letter-spacing: 0.04em; line-height: 1.2; word-break: break-word;
 }
 .step-highlight {
@@ -293,17 +333,19 @@ body {
   display: flex; align-items: center; justify-content: center;
 }
 .explore-annotation {
-  font-size: var(--font-size-lg); font-weight: 600;
+  font-family: var(--font-accent);
+  font-size: var(--font-size-game-body); font-weight: var(--font-weight-body);
   color: rgba(27,58,107,0.72); max-width: 540px; line-height: 1.5;
 }
 .explore-step-counter {
-  font-size: var(--font-size-sm); color: rgba(27,58,107,0.38); font-weight: 700;
+  font-family: var(--font-accent);
+  font-size: var(--font-size-game-body); color: rgba(27,58,107,0.38); font-weight: var(--font-weight-body);
   letter-spacing: 0.08em;
 }
 .btn-start-practice {
   background: var(--color-navy); color: #fff;
-  font-family: var(--font-primary);
-  font-size: var(--font-size-lg); font-weight: 800;
+  font-family: var(--font-accent);
+  font-size: var(--font-size-game-body); font-weight: var(--font-weight-body);
   border: none; outline: none; border-radius: var(--btn-radius);
   padding: 14px 44px; min-height: 52px; cursor: pointer;
   opacity: 0; pointer-events: none;
@@ -321,11 +363,13 @@ body {
   padding: clamp(12px,2.5vw,28px) clamp(16px,5vw,56px);
 }
 .practice-q-label {
-  font-size: var(--font-size-sm); font-weight: 700;
+  font-family: var(--font-accent);
+  font-size: var(--font-size-game-body); font-weight: var(--font-weight-body);
   color: rgba(27,58,107,0.4); text-transform: uppercase; letter-spacing: 0.1em;
 }
 .practice-expression {
-  font-size: var(--font-size-expr); font-weight: 900;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-expr); font-weight: var(--font-weight-title);
   color: var(--color-navy); text-align: center;
   letter-spacing: 0.04em; word-break: break-word;
 }
@@ -340,8 +384,8 @@ body {
   border-radius: var(--card-radius);
   padding: clamp(12px,2vw,22px);
   min-height: 64px;
-  font-family: var(--font-primary);
-  font-size: clamp(18px,3vw,32px); font-weight: 900;
+  font-family: var(--font-accent);
+  font-size: clamp(18px,3vw,32px); font-weight: var(--font-weight-body);
   color: var(--color-navy);
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
@@ -392,9 +436,9 @@ body {
   border: 1.5px solid var(--color-correct);
   border-radius: 14px;
   padding: clamp(12px,1.5vw,16px) clamp(16px,2vw,22px);
-  font-family: var(--font-primary);
-  font-size: var(--font-size-base);
-  font-weight: 700;
+  font-family: var(--font-accent);
+  font-size: var(--font-size-game-body);
+  font-weight: var(--font-weight-body);
   color: #15803D;
   max-width: 55%;
   line-height: 1.5;
@@ -509,23 +553,27 @@ body {
 }
 
 .modal-title {
-  font-size: clamp(20px, 2.6vw, 28px);
-  font-weight: 900;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-popup-title);
+  font-weight: var(--font-weight-title);
   color: var(--color-navy);
   text-align: center;
   margin-bottom: 6px;
 }
 
 .modal-subtitle {
-  font-size: var(--font-size-base);
+  font-family: var(--font-accent);
+  font-size: var(--font-size-popup-body);
   color: rgba(27, 58, 107, 0.55);
-  font-weight: 600;
+  font-weight: var(--font-weight-body);
   text-align: center;
   margin-bottom: clamp(16px, 2.5vw, 24px);
 }
 
 .modal-subtitle-confirm{
-  font-weight: 600;
+  font-family: var(--font-accent);
+  font-size: var(--font-size-popup-body);
+  font-weight: var(--font-weight-body);
   text-align: center;
   gap: 14px;
   background: #EEF3FA;
@@ -554,12 +602,14 @@ body {
   border-radius: 50%;
   flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 900;
+  font-family: var(--font-accent);
+  font-size: 16px; font-weight: var(--font-weight-body);
   color: #fff;
 }
 .modal-step__text {
-  font-size: var(--font-size-base);
-  font-weight: 600;
+  font-family: var(--font-accent);
+  font-size: var(--font-size-popup-body);
+  font-weight: var(--font-weight-body);
   color: var(--color-navy);
   line-height: 1.5;
 }
@@ -579,6 +629,7 @@ body {
   filter: drop-shadow(0 6px 16px rgba(27, 58, 107, 0.18));
 }
 
+
 /* ── Language modal ── */
 .lang-dropdown { position: relative; width: 100%; margin-bottom: clamp(16px, 2vw, 22px); }
 .lang-trigger {
@@ -588,9 +639,9 @@ body {
   border-radius: 12px;
   padding: 13px 16px;
   color: var(--color-navy);
-  font-family: var(--font-primary);
-  font-size: var(--font-size-base);
-  font-weight: 600;
+  font-family: var(--font-accent);
+  font-size: var(--font-size-popup-body);
+  font-weight: var(--font-weight-body);
   cursor: pointer;
   display: flex; align-items: center; gap: 10px;
   transition: border-color var(--dur-fast), background var(--dur-fast);
@@ -611,9 +662,9 @@ body {
 .lang-option {
   padding: 13px 16px;
   color: var(--color-navy);
-  font-family: var(--font-primary);
-  font-size: var(--font-size-base);
-  font-weight: 600;
+  font-family: var(--font-accent);
+  font-size: var(--font-size-popup-body);
+  font-weight: var(--font-weight-body);
   cursor: pointer;
   transition: background var(--dur-fast);
 }
@@ -627,9 +678,9 @@ body {
   outline: none;
   border-radius: var(--btn-radius);
   color: var(--color-navy);
-  font-family: var(--font-primary);
-  font-size: var(--font-size-base);
-  font-weight: 700;
+  font-family: var(--font-accent);
+  font-size: var(--font-size-popup-body);
+  font-weight: var(--font-weight-body);
   cursor: pointer;
   transition: border-color var(--dur-fast), background var(--dur-fast);
 }
@@ -641,9 +692,9 @@ body {
   outline: none;
   border-radius: var(--btn-radius);
   color: var(--color-navy);
-  font-family: var(--font-primary);
-  font-size: var(--font-size-base);
-  font-weight: 800;
+  font-family: var(--font-accent);
+  font-size: var(--font-size-popup-body);
+  font-weight: var(--font-weight-body);
   cursor: pointer;
   transition: background var(--dur-fast), transform var(--dur-fast);
 }
@@ -661,8 +712,9 @@ body {
   padding-top: clamp(28px, 4vw, 44px);
 }
 .summary-modal-title {
-  font-size: clamp(20px, 2.6vw, 28px);
-  font-weight: 900;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-popup-title);
+  font-weight: var(--font-weight-title);
   color: var(--color-navy);
   margin-bottom: clamp(16px, 2.5vw, 24px);
 }
@@ -681,16 +733,17 @@ body {
   margin-bottom: clamp(16px, 2.5vw, 24px);
   display: inline-flex; flex-direction: column; align-items: center; gap: 4px;
 }
-.summary-percent { font-size: clamp(24px, 3.2vw, 36px); font-weight: 900; color: var(--color-navy); }
+.summary-percent { font-family: var(--font-primary); font-size: clamp(27px, 3.2vw, 42px); font-weight: var(--font-weight-title); color: var(--color-navy); }
 .summary-score-label {
-  font-size: var(--font-size-sm); font-weight: 700;
+  font-family: var(--font-accent);
+  font-size: var(--font-size-popup-body); font-weight: var(--font-weight-body);
   color: rgba(27, 58, 107, 0.55);
   text-transform: uppercase; letter-spacing: 0.1em;
 }
 .btn-summary-play {
   background: var(--color-submit); color: var(--color-navy);
-  font-family: var(--font-primary);
-  font-size: var(--font-size-lg); font-weight: 800;
+  font-family: var(--font-accent);
+  font-size: var(--font-size-popup-body); font-weight: var(--font-weight-body);
   border: none; outline: none; border-radius: var(--btn-radius);
   padding: 13px 44px; min-height: 48px; cursor: pointer;
   transition: transform var(--dur-fast), background var(--dur-fast);
