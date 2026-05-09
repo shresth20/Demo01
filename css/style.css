@@ -257,7 +257,7 @@ body {
   pointer-events: none;
 }
 .loader-overlay__gif {
-  width: clamp(70px, 10vw, 90px);
+  width: clamp(80px, 10vw, 100px);
   height: auto;
   display: block;
 }
@@ -531,6 +531,7 @@ body {
   background: #EEF3FA;
   border-radius: 14px;
   padding: 11px 16px;
+  margin: 0 50px;
 }
 
 
@@ -646,9 +647,11 @@ body {
   cursor: pointer;
   transition: background var(--dur-fast), transform var(--dur-fast);
 }
-.btn-lang-apply:hover { background: var(--color-submit-hover); transform: translateY(-1px); }
+.btn-lang-apply:hover:not(:disabled) { background: var(--color-submit-hover); transform: translateY(-1px); }
+.btn-lang-apply:disabled { opacity: 0.42; cursor: not-allowed; transform: none; }
 .lang-highlight { color: var(--color-navy); font-style: italic; }
 #lang-card { max-width: 500px; }
+#lang-select-view { padding:0  44px; }
 #lang-confirm-view { text-align: center; }
 
 /* ── Summary modal ── */
@@ -665,10 +668,11 @@ body {
 }
 .summary-stars {
   display: flex; gap: clamp(10px, 2vw, 18px);
-  justify-content: center; align-items: center;
-  margin-bottom: clamp(16px, 2.5vw, 24px);
+  justify-content: center; align-items: flex-end;
+  margin-bottom: clamp(24px, 3.5vw, 36px);
 }
 .summary-star { width: clamp(52px, 7vw, 76px); height: auto; display: block; }
+.summary-stars img:nth-child(2) { width: clamp(76px, 10vw, 110px); margin-bottom: clamp(12px, 2vw, 20px); }
 .summary-star--unearned { filter: grayscale(1) brightness(1.1) opacity(0.35); }
 .summary-score-badge {
   background: #F0F5FF;

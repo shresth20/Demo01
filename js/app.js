@@ -211,11 +211,9 @@ function handleSubmit() {
   GameState.isSubmitted = true;
   syncSubmitButton();
 
-  _feedbackShowTimeout = setTimeout(function() {
-    _feedbackShowTimeout = null;
-    GameState.recordAnswer();
-    showInlineFeedback(correct);
-  }, 600);
+  _feedbackShowTimeout = null;
+  GameState.recordAnswer();
+  showInlineFeedback(correct);
 }
 
 function handleReset() {
@@ -287,7 +285,6 @@ function showInlineFeedback(isCorrect) {
       GameState.advance();
       if (GameState.currentScreen === 'complete') {
         renderProgressDots();
-        playComplete();
         openSummaryModal();
       } else {
         transitionToScreen(GameState.currentScreen);
@@ -539,11 +536,23 @@ function _showLangSelectView() {
   var cancelBtn = qs('#btn-lang-cancel');
   var applyBtn = qs('#btn-lang-apply');
 
+  var _originalLang = _langSelected;
+
   if (currentText) currentText.textContent = _langSelectedLabel;
   if (!trigger || !list) return;
 
   list.hidden = true;
   trigger.setAttribute('aria-expanded', 'false');
+
+  function _syncApplyBtn() {
+    if (!applyBtn) return;
+    var diff = _langSelected !== _originalLang;
+    applyBtn.disabled = !diff;
+    applyBtn.setAttribute('aria-disabled', diff ? 'false' : 'true');
+  }
+
+  // Apply starts disabled (nothing has changed yet)
+  _syncApplyBtn();
 
   // Mark the currently selected option
   qsa('.lang-option').forEach(function(opt) {
@@ -571,10 +580,15 @@ function _showLangSelectView() {
       opt.setAttribute('aria-selected', 'true');
       list.hidden = true;
       trigger.setAttribute('aria-expanded', 'false');
+      _syncApplyBtn();
     };
   });
 
-  if (cancelBtn) cancelBtn.onclick = closeLangModal;
+  if (cancelBtn) cancelBtn.onclick = function() {
+    _langSelected = _originalLang;
+    _langSelectedLabel = (qs('.lang-option[data-lang="' + _originalLang + '"]') || {getAttribute: function(){return _langSelectedLabel;}}).getAttribute('data-label') || _langSelectedLabel;
+    closeLangModal();
+  };
   if (applyBtn) applyBtn.onclick = _applyLanguage;
 }
 
