@@ -3,7 +3,6 @@
 var _exploreAbort = false;
 var _selectedCardEl = null;
 var _htpShownOnce = false;
-var _feedbackShowTimeout = null;
 var _feedbackTimeout = null;
 var _feedbackIsCorrect = null;
 
@@ -47,6 +46,17 @@ function applyStaticTranslations() {
   /* Rotate overlay */
   var rotEl = qs('#rotate-overlay p');
   if (rotEl) rotEl.textContent = I18n.t('bodmasRotateMsg');
+
+  /* Header icon-button tooltips */
+  _setTooltip('#btn-reset',      I18n.t('btnResetTitle'));
+  _setTooltip('#btn-info',       I18n.t('btnInfoTitle'));
+  _setTooltip('#btn-globe',      I18n.t('btnGlobeTitle'));
+  var fsBtn = qs('#btn-fullscreen');
+  if (fsBtn) {
+    var fsKey = document.fullscreenElement ? 'btnFullscreenExit' : 'btnFullscreenEnter';
+    fsBtn.title = I18n.t(fsKey);
+    fsBtn.setAttribute('aria-label', I18n.t(fsKey));
+  }
 }
 
 function _setText(sel, text) {
@@ -57,6 +67,14 @@ function _setText(sel, text) {
 function _setHTML(sel, html) {
   var el = qs(sel);
   if (el && typeof html === 'string') el.innerHTML = html;
+}
+
+function _setTooltip(sel, text) {
+  var el = qs(sel);
+  if (el && typeof text === 'string') {
+    el.title = text;
+    el.setAttribute('aria-label', text);
+  }
 }
 
 /* ── Persistent listeners (header/footer — attached once) ── */
@@ -87,11 +105,13 @@ function attachPersistentListeners() {
 
   document.addEventListener('fullscreenchange', function() {
     var btn = qs('#btn-fullscreen');
-    var img = btn && btn.querySelector('img');
-    if (!img) return;
-    img.src = document.fullscreenElement
-      ? 'assets/icons/Exit_Fullscreen_icon.svg'
-      : 'assets/icons/Fullscreen_icon.svg';
+    if (!btn) return;
+    var img = btn.querySelector('img');
+    var isFs = !!document.fullscreenElement;
+    if (img) img.src = isFs ? 'assets/icons/Exit_Fullscreen_icon.svg' : 'assets/icons/Fullscreen_icon.svg';
+    var fsKey = isFs ? 'btnFullscreenExit' : 'btnFullscreenEnter';
+    btn.title = I18n.t(fsKey);
+    btn.setAttribute('aria-label', I18n.t(fsKey));
   });
 }
 
@@ -259,7 +279,6 @@ function handleSubmit() {
   GameState.isSubmitted = true;
   syncSubmitButton();
 
-  _feedbackShowTimeout = null;
   GameState.recordAnswer();
   showInlineFeedback(correct);
 }
@@ -348,7 +367,6 @@ function showInlineFeedback(isCorrect) {
 }
 
 function hideFeedback() {
-  if (_feedbackShowTimeout) { clearTimeout(_feedbackShowTimeout); _feedbackShowTimeout = null; }
   if (_feedbackTimeout)     { clearTimeout(_feedbackTimeout);     _feedbackTimeout = null; }
   var overlay = qs('#feedback-overlay');
   if (overlay) overlay.hidden = true;

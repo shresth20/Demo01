@@ -57,7 +57,6 @@ function _playTone(freq, type, duration, gainVal) {
   } catch(e) {}
 }
 
-function playClick()   { _playSound(_sounds.click); }
 function playCorrect() { _playSound(_sounds.correct); }
 function playWrong()   { _playSound(_sounds.wrong); }
 

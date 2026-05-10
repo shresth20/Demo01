@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
   <link rel="stylesheet" href="css/animations.css">
   <link rel="stylesheet" href="css/responsive.css">
 </head>
+
 <body>
 
   <!-- ═══ LAYER 5: Header (persistent) ═══ -->
@@ -16,9 +18,8 @@
     <!-- LEFT: Progress bar -->
     <div class="header__left">
       <div class="progress-track">
-        <div class="progress-dots" id="progress-dots"
-             role="progressbar" aria-label="Question progress"
-             aria-valuenow="0" aria-valuemax="6" aria-valuetext="0 of 6">
+        <div class="progress-dots" id="progress-dots" role="progressbar" aria-label="Question progress"
+          aria-valuenow="0" aria-valuemax="6" aria-valuetext="0 of 6">
           <!-- dots injected by app.js -->
         </div>
       </div>
@@ -72,17 +73,16 @@
 
     <!-- ── Top-right cluster ── -->
     <div class="deco deco--half-r"><img src="assets/icons/½.svg" alt="" draggable="false"></div>
-    <div class="deco deco--bodmas">
-      <img src="assets/icons/Group.svg" alt="" draggable="false">
-    </div>
+    <div class="deco deco--bodmas"><img src="assets/icons/Group.svg" alt="" draggable="false"></div>
     <div class="deco deco--times-grn"><img src="assets/icons/×.svg" alt="" draggable="false"></div>
     <div class="deco deco--eq-red-r"><img src="assets/icons/=.svg" alt="" draggable="false"></div>
     <div class="deco deco--times3-tr"><img src="assets/icons/×3.svg" alt="" draggable="false"></div>
 
     <!-- ── Bottom-right cluster ── -->
-    <div class="deco deco--calc">
-      <img src="assets/icons/Calculator.svg" alt="" draggable="false">
-    </div>
+    <div class="deco deco--calc"><img src="assets/images/Calculator.png" alt="" draggable="false"></div>
+    <div class="deco deco--plus-br"><img src="assets/icons/+.svg" alt="" draggable="false"></div>
+    <div class="deco deco--vector-br"><img src="assets/icons/Vector.svg" alt="" draggable="false"></div>
+    <div class="deco deco--pi-br"><img src="assets/icons/π.svg" alt="" draggable="false"></div>
 
     <!-- ── Bottom-left cluster ── -->
     <div class="deco deco--equaction">
@@ -101,9 +101,9 @@
   <!-- ═══ Portrait rotate overlay ═══ -->
   <div id="rotate-overlay" class="rotate-overlay" aria-hidden="true" role="alert">
     <svg width="80" height="80" viewBox="0 0 80 80" fill="none" aria-hidden="true">
-      <rect x="20" y="10" width="40" height="60" rx="8" stroke="#1B3A6B" stroke-width="3" fill="none"/>
-      <circle cx="40" cy="62" r="3" fill="#1B3A6B"/>
-      <path d="M55 25 Q70 40 55 55" stroke="#F5B61A" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <rect x="20" y="10" width="40" height="60" rx="8" stroke="#1B3A6B" stroke-width="3" fill="none" />
+      <circle cx="40" cy="62" r="3" fill="#1B3A6B" />
+      <path d="M55 25 Q70 40 55 55" stroke="#F5B61A" stroke-width="3" stroke-linecap="round" fill="none" />
     </svg>
     <p>Please rotate your device to landscape mode</p>
   </div>
@@ -114,7 +114,8 @@
   </div>
 
   <!-- ═══ How to Play Modal ═══ -->
-  <div id="htp-modal" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="htp-title">
+  <div id="htp-modal" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true"
+    aria-labelledby="htp-title">
     <div class="modal-card" id="htp-card">
       <button class="modal-close" id="modal-close" aria-label="Close How to Play">
         <img src="assets/icons/close_popup.svg" alt="" draggable="false">
@@ -124,19 +125,23 @@
       <ol class="modal-steps" id="htp-steps">
         <li class="modal-step">
           <span class="modal-step__num">1</span>
-          <span class="modal-step__text" id="htp-step-1">Solve <strong>Brackets</strong> (B) first — expressions inside ( ) have highest priority.</span>
+          <span class="modal-step__text" id="htp-step-1">Solve <strong>Brackets</strong> (B) first — expressions inside
+            ( ) have highest priority.</span>
         </li>
         <li class="modal-step">
           <span class="modal-step__num">2</span>
-          <span class="modal-step__text" id="htp-step-2">Next tackle <strong>Orders</strong> (O) — powers like 2³ and square roots √.</span>
+          <span class="modal-step__text" id="htp-step-2">Next tackle <strong>Orders</strong> (O) — powers like 2³ and
+            square roots √.</span>
         </li>
         <li class="modal-step">
           <span class="modal-step__num">3</span>
-          <span class="modal-step__text" id="htp-step-3"><strong>Division</strong> (D) and <strong>Multiplication</strong> (M) — solve both left to right.</span>
+          <span class="modal-step__text" id="htp-step-3"><strong>Division</strong> (D) and
+            <strong>Multiplication</strong> (M) — solve both left to right.</span>
         </li>
         <li class="modal-step">
           <span class="modal-step__num">4</span>
-          <span class="modal-step__text" id="htp-step-4"><strong>Addition</strong> (A) and <strong>Subtraction</strong> (S) — solve both left to right.</span>
+          <span class="modal-step__text" id="htp-step-4"><strong>Addition</strong> (A) and <strong>Subtraction</strong>
+            (S) — solve both left to right.</span>
         </li>
         <li class="modal-step">
           <span class="modal-step__num">5</span>
@@ -144,7 +149,8 @@
         </li>
         <li class="modal-step">
           <span class="modal-step__num">6</span>
-          <span class="modal-step__text" id="htp-step-6">Click <strong>Submit</strong> to check your answer and earn stars!</span>
+          <span class="modal-step__text" id="htp-step-6">Click <strong>Submit</strong> to check your answer and earn
+            stars!</span>
         </li>
       </ol>
       <img class="modal-character" src="assets/images/Swiftee-right.png" alt="" aria-hidden="true" draggable="false">
@@ -152,7 +158,8 @@
   </div>
 
   <!-- ═══ Language Modal ═══ -->
-  <div id="lang-modal" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="lang-title">
+  <div id="lang-modal" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true"
+    aria-labelledby="lang-title">
     <div class="modal-card" id="lang-card">
       <!-- Select view -->
       <div id="lang-select-view">
@@ -164,20 +171,17 @@
         <div class="lang-dropdown" id="lang-dropdown">
           <button class="lang-trigger" id="lang-trigger" aria-expanded="false" aria-haspopup="listbox">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
-              <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" stroke="currentColor" stroke-width="2"/>
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" />
+              <path
+                d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"
+                stroke="currentColor" stroke-width="2" />
             </svg>
             <span id="lang-current-text">English</span>
             <svg class="lang-chevron" width="12" height="8" viewBox="0 0 12 8" fill="none" aria-hidden="true">
-              <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
             </svg>
           </button>
           <ul class="lang-list" id="lang-list" role="listbox" aria-label="Language options" hidden>
-            <li class="lang-option lang-option--selected" role="option" aria-selected="true" data-lang="en" data-label="English">English</li>
-            <li class="lang-option" role="option" aria-selected="false" data-lang="hi" data-label="हिन्दी">हिन्दी</li>
-            <li class="lang-option" role="option" aria-selected="false" data-lang="mr" data-label="मराठी">मराठी</li>
-            <li class="lang-option" role="option" aria-selected="false" data-lang="te" data-label="తెలుగు">తెలుగు</li>
-            <li class="lang-option" role="option" aria-selected="false" data-lang="gu" data-label="ગુજરાતી">ગુજરાતી</li>
           </ul>
         </div>
         <div class="lang-actions">
@@ -188,13 +192,15 @@
       <!-- Confirm view (shown after Apply) -->
       <div id="lang-confirm-view" hidden>
         <h2 class="modal-title" id="lang-confirm-title">Language Selected!</h2>
-        <p class="modal-subtitle-confirm" id="lang-confirm-msg">Your app is now in <strong id="lang-confirm-name" class="lang-highlight">English</strong>.<br><span id="lang-confirm-end">Let's get started!</span></p>
+        <p class="modal-subtitle-confirm" id="lang-confirm-msg">Your app is now in <strong id="lang-confirm-name"
+            class="lang-highlight">English</strong>.<br><span id="lang-confirm-end">Let's get started!</span></p>
       </div>
     </div>
   </div>
 
   <!-- ═══ Summary Modal ═══ -->
-  <div id="summary-modal" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="summary-title">
+  <div id="summary-modal" class="modal-overlay" aria-hidden="true" role="dialog" aria-modal="true"
+    aria-labelledby="summary-title">
     <div class="modal-card summary-card" id="summary-card">
       <h2 class="summary-modal-title" id="summary-title">BODMAS Pro!</h2>
       <div class="summary-stars" id="summary-stars" aria-label="Stars earned"></div>
@@ -206,8 +212,8 @@
     </div>
   </div>
 
-  <!-- Anime.js CDN (user-requested) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+  <!-- Anime.js (local) -->
+  <script src="js/vendor/anime.min.js"></script>
 
   <!-- App modules — load order matters -->
   <script src="js/utils.js"></script>
@@ -219,4 +225,5 @@
   <script src="js/i18n.js"></script>
   <script src="js/app.js"></script>
 </body>
+
 </html>

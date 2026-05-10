@@ -123,36 +123,3 @@ function animateWrongCard(cardEl) {
     setTimeout(function() { cardEl.classList.remove('card-shake'); }, 600);
   }
 }
-
-function animateStarParticles(container, count) {
-  if (!container) return;
-  count = count || 6;
-  var emojis = ['⭐','✨','🌟','💫'];
-  for (var i = 0; i < count; i++) {
-    (function() {
-      var el = document.createElement('div');
-      el.className = 'star-particle';
-      el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
-      var startX = 30 + Math.random() * 40;
-      var startY = 30 + Math.random() * 40;
-      el.style.left = startX + '%';
-      el.style.top  = startY + '%';
-      el.style.opacity = '0';
-      container.appendChild(el);
-      if (!animeAvailable) { el.remove(); return; }
-      var spreadX = (Math.random() - 0.5) * 100;
-      var spreadY = -40 - Math.random() * 60;
-      anime({
-        targets: el,
-        translateX: [0, spreadX],
-        translateY: [0, spreadY],
-        scale: [0, 1.2, 0],
-        opacity: [0, 1, 0],
-        duration: 700 + Math.random() * 400,
-        delay: Math.random() * 200,
-        easing: 'easeOutCubic',
-        complete: function() { el.remove(); }
-      });
-    })();
-  }
-}

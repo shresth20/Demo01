@@ -47,7 +47,12 @@ var BODMAS_LOCALES = {
     cancelButton:      'Cancel',
     langSelectedTitle: 'Language Selected!',
     langSelectedMessageStart: 'Your app is now in {language}.',
-    langSelectedMessageEnd:   "Let's get started!"
+    langSelectedMessageEnd:   "Let's get started!",
+    btnResetTitle:        'Reset',
+    btnInfoTitle:         'How To Play',
+    btnGlobeTitle:        'Select Language',
+    btnFullscreenEnter:   'Enter Fullscreen',
+    btnFullscreenExit:    'Exit Fullscreen'
   },
 
   hi: {
@@ -97,7 +102,12 @@ var BODMAS_LOCALES = {
     cancelButton:      'रद्द करें',
     langSelectedTitle: 'भाषा चुनी गई!',
     langSelectedMessageStart: 'आपका ऐप {language} में है।',
-    langSelectedMessageEnd:   'चलिए शुरू करते हैं!'
+    langSelectedMessageEnd:   'चलिए शुरू करते हैं!',
+    btnResetTitle:        'रीसेट',
+    btnInfoTitle:         'कैसे खेलें',
+    btnGlobeTitle:        'भाषा चुनें',
+    btnFullscreenEnter:   'फुलस्क्रीन में जाएं',
+    btnFullscreenExit:    'फुलस्क्रीन से बाहर जाएं'
   },
 
   mr: {
@@ -147,7 +157,12 @@ var BODMAS_LOCALES = {
     cancelButton:      'रद्द करा',
     langSelectedTitle: 'भाषा निवडली!',
     langSelectedMessageStart: 'तुमचे अॅप आता {language} मध्ये आहे.',
-    langSelectedMessageEnd:   'चला सुरूवात करूया!'
+    langSelectedMessageEnd:   'चला सुरूवात करूया!',
+    btnResetTitle:        'रीसेट',
+    btnInfoTitle:         'कसे खेळायचे',
+    btnGlobeTitle:        'भाषा निवडा',
+    btnFullscreenEnter:   'फुलस्क्रीन सुरू करा',
+    btnFullscreenExit:    'फुलस्क्रीन बंद करा'
   },
 
   te: {
@@ -197,7 +212,12 @@ var BODMAS_LOCALES = {
     cancelButton:      'రద్దు చేయు',
     langSelectedTitle: 'భాష ఎంపుకుంటుంది!',
     langSelectedMessageStart: 'మీ అప్ ఇప్పుడు {language} లో ఉంది.',
-    langSelectedMessageEnd:   'ప్రారంభిస్తాం!'
+    langSelectedMessageEnd:   'ప్రారంభిస్తాం!',
+    btnResetTitle:        'రీసెట్',
+    btnInfoTitle:         'ఎలా ఆడాలి',
+    btnGlobeTitle:        'భాష ఎంచుకోండి',
+    btnFullscreenEnter:   'పూర్తి స్క్రీన్‌లోకి వెళ్ళండి',
+    btnFullscreenExit:    'పూర్తి స్క్రీన్ నుండి బయటకు వెళ్ళండి'
   },
 
   gu: {
@@ -247,6 +267,11 @@ var BODMAS_LOCALES = {
     cancelButton:      'રદ કરો',
     langSelectedTitle: 'ભાષા પસંદ કરાઈ!',
     langSelectedMessageStart: 'તમારું ઐપ હવે {language} માં છે.',
-    langSelectedMessageEnd:   'ચાલો શરુ કરીએ!'
+    langSelectedMessageEnd:   'ચાલો શરુ કરીએ!',
+    btnResetTitle:        'રીસેટ',
+    btnInfoTitle:         'કેવી રીતે રમવું',
+    btnGlobeTitle:        'ભાષા પસંદ કરો',
+    btnFullscreenEnter:   'ફુલસ્ક્રીન દાખલ કરો',
+    btnFullscreenExit:    'ફુલસ્ક્રીન બહાર નીકળો'
   }
 };

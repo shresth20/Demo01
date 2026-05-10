@@ -36,10 +36,6 @@
   .loading-screen    { gap: 12px; }
   .explore-screen    { gap: 10px; }
   .practice-screen   { gap: 8px; }
-  .feedback-screen   { gap: 10px; }
-  .completion-screen { gap: 12px; }
-  .feedback-icon     { width: 48px; height: 48px; font-size: 24px; }
-  .star              { font-size: clamp(28px, 5vw, 48px); }
 }
 
 /* Very narrow screens */

@@ -1,8 +1,7 @@
-/* i18n singleton — loads locales.json, merges BODMAS_LOCALES, persists to localStorage */
+/* i18n singleton — loads locales.json and merges BODMAS_LOCALES */
 var I18n = (function() {
   var _data   = null;
   var _lang   = 'en';
-  var STORAGE_KEY = 'bodmas_lang';
 
   /* Load locales.json then merge BODMAS_LOCALES into each language section */
   function load(callback) {
@@ -81,14 +80,6 @@ var I18n = (function() {
   /* Returns { en: 'English', hi: 'हिन्दी', … } — each lang's own native name */
   function getSupportedLanguages() {
     return (_data && _data.supportedLanguages) ? _data.supportedLanguages : {};
-  }
-
-  function _safeGetStorage(key) {
-    try { return localStorage.getItem(key); } catch(e) { return null; }
-  }
-
-  function _safeSetStorage(key, val) {
-    try { localStorage.setItem(key, val); } catch(e) {}
   }
 
   return { load: load, setLang: setLang, getLang: getLang, t: t, tRandom: tRandom, getSupportedLanguages: getSupportedLanguages };

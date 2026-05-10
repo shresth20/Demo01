@@ -84,6 +84,14 @@
   --dur-fast: 150ms;
   --dur-normal: 350ms;
   --ease-out: cubic-bezier(0.25,0.46,0.45,0.94);
+
+  --color-soft-blue: #F0F5FF;
+  --color-panel-soft: #EEF3FA;
+  --color-overlay: rgba(15, 30, 60, 0.42);
+  --color-correct-text: #15803D;
+  --color-wrong-text: #B91C1C;
+  --shadow-submit: 0 4px 18px rgba(245, 182, 26, 0.4);
+  --shadow-navy: 0 4px 18px rgba(27, 58, 107, 0.22);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -152,16 +160,20 @@ body {
 .deco--times3-tr { top: 24vh;   right: 5vw;    color: var(--color-navy); font-size: clamp(11px,1.3vw,15px); font-weight:700; opacity:.55; }
 
 /* Bottom-right cluster */
-.deco--calc      { top: 63vh;   right: 0.5vw;  }
-.deco--calc img  { width: clamp(207px,9vw,300px); display:block; }
+.deco--calc      { top: 65vh; right: 1vw; }
+.deco--calc img  { width: clamp(150px, 12vw, 200px); display: block; }
+.deco--plus-br   { top: 65vh; right: 7vw; }
+.deco--vector-br { top: 73vh; right: 12vw; }
+.deco--pi-br     { top: 86vh; right: 12vw; }
 
 /* Bottom-left cluster */
 .deco--equaction { top: 69vh;   left: 3vw;  }
 .deco--equaction img { width: clamp(210px,14vw,300px); display:block; }
 
 /* ── SVG sizing for text→image deco replacements ── */
-.deco--times3-tl img, .deco--times3-tr img, .deco--half-l img, .deco--half-r img  { height: clamp(11px,1.3vw,15px); width: auto; display: block; }
-.deco--eq-red-l img, .deco--eq-red-r img , .deco--times-grn img, .deco--times-grn-l img   { width: clamp(11px,1.3vw,15px); height: auto; display: block; }
+.deco--plus-br img  { width: clamp(13px,1.4vw,18px); height: auto; display: block; }
+.deco--times3-tl img, .deco--times3-tr img, .deco--half-l img, .deco--half-r img { height: clamp(11px,1.3vw,15px); width: auto; display: block; }
+.deco--eq-red-l img, .deco--eq-red-r img , .deco--times-grn img, .deco--times-grn-l img,.deco--vector-br img,.deco--pi-br img   { width: clamp(11px,1.3vw,15px); height: auto; display: block; }
 
 /* ── Layer 4: Content area ── */
 #content-area {
@@ -237,7 +249,7 @@ body {
   min-height: 52px;
   cursor: pointer;
   transition: background var(--dur-fast), transform var(--dur-fast), opacity var(--dur-fast);
-  box-shadow: 0 4px 18px rgba(245,182,26,0.4);
+  box-shadow: var(--shadow-submit);
 }
 .btn-submit:hover:not(:disabled) {
   background: var(--color-submit-hover);
@@ -279,7 +291,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(15, 30, 60, 0.42);
+  background: var(--color-overlay);
   backdrop-filter: blur(7px);
   -webkit-backdrop-filter: blur(7px);
   display: flex;
@@ -350,7 +362,7 @@ body {
   padding: 14px 44px; min-height: 52px; cursor: pointer;
   opacity: 0; pointer-events: none;
   transition: transform var(--dur-fast), background var(--dur-fast);
-  box-shadow: 0 4px 18px rgba(27,58,107,0.22);
+  box-shadow: var(--shadow-navy);
 }
 .btn-start-practice.visible { opacity: 1; pointer-events: auto; }
 .btn-start-practice:hover { background: var(--color-navy-light); transform: translateY(-2px); }
@@ -407,12 +419,12 @@ body {
 .option-card--correct {
   border-color: var(--color-correct);
   background: var(--color-correct-bg);
-  color: #15803D;
+  color: var(--color-correct-text);
 }
 .option-card--wrong {
   border-color: var(--color-wrong);
   background: var(--color-wrong-bg);
-  color: #B91C1C;
+  color: var(--color-wrong-text);
 }
 
 /* ── Layer 6: Inline feedback overlay (fixed, above board layers) ── */
@@ -439,7 +451,7 @@ body {
   font-family: var(--font-accent);
   font-size: var(--font-size-game-body);
   font-weight: var(--font-weight-body);
-  color: #15803D;
+  color: var(--color-correct-text);
   max-width: 55%;
   line-height: 1.5;
   pointer-events: auto;
@@ -447,7 +459,7 @@ body {
 .feedback-toast--wrong {
   background: var(--color-wrong-bg);
   border-color: var(--color-wrong);
-  color: #B91C1C;
+  color: var(--color-wrong-text);
 }
 .feedback-char-gif {
   width: clamp(100px,12vw,170px);
@@ -460,11 +472,6 @@ body {
   width: clamp(120px,18vw,190px);
   transform: translateY(20px);
 }
-
-.star-particle {
-  position: absolute; pointer-events: none; z-index: 10;
-}
-.star-particle { font-size: clamp(14px,2vw,22px); }
 
 /* ── Confetti celebration ── */
 .celebration {
@@ -503,7 +510,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: 9998;
-  background: rgba(15, 30, 60, 0.42);
+  background: var(--color-overlay);
   backdrop-filter: blur(7px);
   -webkit-backdrop-filter: blur(7px);
   display: flex;
@@ -540,7 +547,7 @@ body {
   border: none;
   outline: none;
   box-shadow: none;
-  background: #F0F5FF;
+  background: var(--color-soft-blue);
   border-radius: 50%;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
@@ -576,7 +583,7 @@ body {
   font-weight: var(--font-weight-body);
   text-align: center;
   gap: 14px;
-  background: #EEF3FA;
+  background: var(--color-panel-soft);
   border-radius: 14px;
   padding: 11px 16px;
   margin: 0 50px;
@@ -593,7 +600,7 @@ body {
   display: flex;
   align-items: center;
   gap: 14px;
-  background: #EEF3FA;
+  background: var(--color-panel-soft);
   border-radius: 14px;
   padding: 11px 16px;
 }
@@ -634,7 +641,7 @@ body {
 .lang-dropdown { position: relative; width: 100%; margin-bottom: clamp(16px, 2vw, 22px); }
 .lang-trigger {
   width: 100%;
-  background: #F0F5FF;
+  background: var(--color-soft-blue);
   border: 1.5px solid var(--color-border);
   border-radius: 12px;
   padding: 13px 16px;
@@ -727,7 +734,7 @@ body {
 .summary-stars img:nth-child(2) { width: clamp(76px, 10vw, 110px); margin-bottom: clamp(12px, 2vw, 20px); }
 .summary-star--unearned { filter: grayscale(1) brightness(1.1) opacity(0.35); }
 .summary-score-badge {
-  background: #F0F5FF;
+  background: var(--color-soft-blue);
   border-radius: 16px;
   padding: 14px 36px;
   margin-bottom: clamp(16px, 2.5vw, 24px);
@@ -747,6 +754,6 @@ body {
   border: none; outline: none; border-radius: var(--btn-radius);
   padding: 13px 44px; min-height: 48px; cursor: pointer;
   transition: transform var(--dur-fast), background var(--dur-fast);
-  box-shadow: 0 4px 18px rgba(245, 182, 26, 0.4);
+  box-shadow: var(--shadow-submit);
 }
 .btn-summary-play:hover { transform: translateY(-2px); background: var(--color-submit-hover); }

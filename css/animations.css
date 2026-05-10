@@ -35,6 +35,5 @@
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .star-particle     { animation: none !important; }
   .card-shake        { animation: none !important; outline: 3px solid #EF4444; }
 }
