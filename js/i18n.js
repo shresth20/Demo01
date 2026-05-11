@@ -42,7 +42,7 @@ var I18n = (function() {
     });
     /* Ensure supportedLanguages is populated from BODMAS_LOCALES if empty */
     if (!_data.supportedLanguages || Object.keys(_data.supportedLanguages).length === 0) {
-      _data.supportedLanguages = { en: 'English', hi: 'हिन्दी', mr: 'मराठी', te: 'తెలుగు', gu: 'ગુજરાતી' };
+      _data.supportedLanguages = { en: 'English', hi: 'हिन्दी', mr: 'मराठी', te: 'తెలుగు', gu: 'ગુજરાતી', od: 'ଓଡ଼ିଆ' };
     }
   }
 
