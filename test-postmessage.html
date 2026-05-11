@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>postMessage Test Harness</title>
+  <style>
+    body { font-family: sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
+    #log { background: #1e1e1e; color: #d4d4d4; padding: 12px; font-size: 13px; font-family: monospace; min-height: 120px; max-height: 200px; overflow-y: auto; }
+    #log .entry { margin-bottom: 6px; }
+    #log .label { color: #4ec9b0; font-weight: bold; }
+    iframe { flex: 1; border: none; border-top: 2px solid #007acc; }
+    #banner { background: #007acc; color: #fff; padding: 8px 14px; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <div id="banner">Parent Window — listening for GAME_COMPLETE postMessage</div>
+  <div id="log"><em style="color:#888">Waiting for message from iframe...</em></div>
+  <iframe src="index.html"></iframe>
+
+  <script>
+    window.addEventListener('message', function(e) {
+      var data = e.data;
+      if (!data || data.type !== 'GAME_COMPLETE') return;
+
+      var log = document.getElementById('log');
+      log.innerHTML = [
+        '<div class="entry"><span class="label">type:</span>     ' + data.type + '</div>',
+        '<div class="entry"><span class="label">correct:</span>  ' + data.correct + ' / ' + data.total + '</div>',
+        '<div class="entry"><span class="label">wrong:</span>    ' + data.wrong + '</div>',
+        '<div class="entry"><span class="label">accuracy:</span> ' + data.accuracy + '%</div>',
+        '<div class="entry"><span class="label">stars:</span>    ' + data.stars + ' / 3</div>',
+        '<div class="entry" style="color:#888;font-size:11px">origin: ' + (e.origin || 'null') + '</div>'
+      ].join('');
+
+      console.log('[GAME_COMPLETE]', data);
+    });
+  </script>
+</body>
+</html>

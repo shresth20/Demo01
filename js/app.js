@@ -766,12 +766,21 @@ function openSummaryModal() {
     };
   }
 
-  modal.onclick = function(e) {
-    if (e.target === modal) closeSummaryModal();
-  };
-
   modal.classList.add('modal--open');
   modal.setAttribute('aria-hidden', 'false');
+
+  // Notify parent window (e.g. LMS iframe host) that the game is complete
+  try {
+    window.parent.postMessage({
+      type:      'GAME_COMPLETE',
+      score:     score,
+      total:     practiceQuestions.length,
+      correct:   score,
+      wrong:     GameState.wrongCount,
+      accuracy:  pct,
+      stars:     earned
+    }, '*');
+  } catch (e) { /* cross-origin parent may block access — silently ignore */ }
 }
 
 function closeSummaryModal() {
