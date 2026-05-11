@@ -2,6 +2,46 @@
 var I18n = (function() {
   var _data   = null;
   var _lang   = 'en';
+  var _LS_KEY = 'game_lang';
+
+  function _getUrlLang() {
+    try {
+      return new URLSearchParams(window.location.search).get('lang') || '';
+    } catch(e) { return ''; }
+  }
+
+  function _setUrlLang(code) {
+    try {
+      var params = new URLSearchParams(window.location.search);
+      params.set('lang', code);
+      history.replaceState(null, '', window.location.pathname + '?' + params.toString());
+    } catch(e) {}
+  }
+
+  function _isSupportedLang(code) {
+    return !!(_data && code && _data[code]);
+  }
+
+  function _getStoredLang() {
+    try { return localStorage.getItem(_LS_KEY) || ''; } catch(e) { return ''; }
+  }
+
+  function _setStoredLang(code) {
+    try { localStorage.setItem(_LS_KEY, code); } catch(e) {}
+  }
+
+  function _resolveInitialLang(defaultLang) {
+    var urlLang = _getUrlLang();
+    if (_isSupportedLang(urlLang)) {
+      _setStoredLang(urlLang);
+      return urlLang;
+    }
+
+    var storedLang = _getStoredLang();
+    if (_isSupportedLang(storedLang)) return storedLang;
+
+    return _isSupportedLang(defaultLang) ? defaultLang : 'en';
+  }
 
   /* Load locales.json then merge BODMAS_LOCALES into each language section */
   function load(callback) {
@@ -11,7 +51,6 @@ var I18n = (function() {
       if (xhr.readyState !== 4) return;
       var ok = (xhr.status === 200 || xhr.status === 0);
       if (!ok) {
-        // Fallback: use only BODMAS_LOCALES so game still works
         _data = { defaultLanguage: 'en', supportedLanguages: {}, languageLabels: {} };
       } else {
         try {
@@ -21,7 +60,9 @@ var I18n = (function() {
         }
       }
       _mergeBodymasLocales();
-      _lang = _data.defaultLanguage || 'en';
+      var resolved = _resolveInitialLang(_data.defaultLanguage);
+      _lang = (_data[resolved]) ? resolved : (_data.defaultLanguage || 'en');
+      _setUrlLang(_lang);
       callback(_lang);
     };
     try { xhr.send(); } catch(e) {
@@ -50,6 +91,8 @@ var I18n = (function() {
     if (!_data || !_data[code]) return;
     _lang = code;
     document.documentElement.lang = code;
+    _setStoredLang(code);
+    _setUrlLang(code);
   }
 
   function getLang() { return _lang; }

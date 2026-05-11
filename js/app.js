@@ -489,7 +489,7 @@ function scheduleAutoAdvanceFromLoading() {
       transitionToScreen('explore');
       if (!_htpShownOnce) {
         _htpShownOnce = true;
-        setTimeout(openHowToPlay, 500);
+        openHowToPlay();
       }
     }
   }, 2200);
