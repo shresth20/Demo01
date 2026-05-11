@@ -647,6 +647,19 @@ function _showLangSelectView() {
 
   trigger.onclick = function() {
     var open = list.hidden;
+    if (open) {
+      var rect       = trigger.getBoundingClientRect();
+      var spaceBelow = window.innerHeight - rect.bottom - 12;
+      var spaceAbove = rect.top - 12;
+      var maxH       = 210;
+      if (spaceBelow < maxH && spaceAbove > spaceBelow) {
+        list.classList.add('lang-list--upward');
+        list.style.maxHeight = Math.min(maxH, spaceAbove) + 'px';
+      } else {
+        list.classList.remove('lang-list--upward');
+        list.style.maxHeight = Math.min(maxH, spaceBelow) + 'px';
+      }
+    }
     list.hidden = !open;
     trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
   };
