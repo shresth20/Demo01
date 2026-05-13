@@ -43,10 +43,6 @@ function applyStaticTranslations() {
   /* Footer submit button */
   _setText('#btn-submit', I18n.t('bodmasSubmit'));
 
-  /* Rotate overlay */
-  var rotEl = qs('#rotate-overlay p');
-  if (rotEl) rotEl.textContent = I18n.t('bodmasRotateMsg');
-
   /* Header icon-button tooltips */
   _setTooltip('#btn-reset',      I18n.t('btnResetTitle'));
   _setTooltip('#btn-info',       I18n.t('btnInfoTitle'));

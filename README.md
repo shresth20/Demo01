@@ -63,6 +63,10 @@ Demo01/
 
 The layout uses a 6-layer z-index architecture declared in `index.html`:
 
+Screen = Single View
+Layers = Z‑Index Stack
+Frame = Content Container
+
 | Layer | Element | Z-index | Purpose |
 |---|---|---|---|
 | 6 | `#feedback-overlay` | 100 | Toast message + character GIF |

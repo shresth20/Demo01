@@ -72,13 +72,16 @@
 
   --header-h: 80px;
   --footer-h: 73px;
-
+  
+/* Z-Index Layers */
   --z-bg: 1;
-  --z-board: 2;
-  --z-deco: 3;
-  --z-content: 4;
-  --z-chrome: 5;
+  --z-board: 20;
+  --z-deco: 30;
+  --z-content: 40;
+  --z-chrome: 99;
   --z-feedback: 100;
+  --z-confetti: 9997;
+  --z-popups: 9998;
   --z-overlay: 9999;
 
   --dur-fast: 150ms;
@@ -290,7 +293,7 @@ body {
 .loader-overlay {
   position: fixed;
   inset: 0;
-  z-index: 9999;
+  z-index: var(--z-overlay);
   background: var(--color-overlay);
   backdrop-filter: blur(7px);
   -webkit-backdrop-filter: blur(7px);
@@ -479,7 +482,7 @@ body {
   top: 0; left: 0;
   width: 100%; height: 100%;
   pointer-events: none;
-  z-index: 1000;
+  z-index: var(--z-confetti);
 }
 .confetti {
   position: absolute;
@@ -491,25 +494,11 @@ body {
   100% { transform: translateY(100vh)  rotate(720deg); opacity: 0; }
 }
 
-/* ── Rotate overlay ── */
-.rotate-overlay {
-  display: none;
-  position: fixed; inset: 0;
-  z-index: var(--z-overlay);
-  background: var(--color-bg);
-  flex-direction: column; align-items: center; justify-content: center;
-  gap: var(--space-lg); text-align: center; padding: var(--space-xl);
-}
-.rotate-overlay p {
-  font-size: var(--font-size-lg); font-weight: 700;
-  color: var(--color-navy); max-width: 240px; line-height: 1.5;
-}
-
 /* ── How to Play Modal ── */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  z-index: 9998;
+  z-index: var(--z-popups);
   background: var(--color-overlay);
   backdrop-filter: blur(7px);
   -webkit-backdrop-filter: blur(7px);
