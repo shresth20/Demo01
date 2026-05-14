@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/animations.css">
   <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/frames.css">
 </head>
 
 <body>
@@ -44,15 +45,27 @@
 
   </header>
 
-  <!-- ═══ LAYER 2: Board ═══ -->
-  <main id="board" class="board" role="main">
+  <!-- ═══ LAYER 2: Board container ═══ -->
+  <div id="board-container" class="board-container">
 
-    <!-- ═══ LAYER 4: Active content (replaced per screen) ═══ -->
-    <section id="content-area" aria-live="polite" aria-atomic="true" aria-label="Game content">
-      <!-- Populated by app.js renderScreen() -->
-    </section>
+    <!-- Primary board -->
+    <main id="board" class="board" role="main">
 
-  </main>
+      <!-- ═══ LAYER 4: Active content (replaced per screen) ═══ -->
+      <section id="content-area" aria-live="polite" aria-atomic="true" aria-label="Game content">
+        <!-- Populated by app.js renderScreen() -->
+      </section>
+
+    </main>
+
+    <!-- Secondary board: visible in Frame03 / Frame04 only -->
+    <aside id="board-secondary" class="board board--secondary" aria-hidden="true">
+      <div class="board-secondary__content">
+        <span class="board-secondary__label">Interactive area</span>
+      </div>
+    </aside>
+
+  </div>
 
   <!-- ═══ LAYER 6: Feedback (fixed, above all board layers) ═══ -->
   <div id="feedback-overlay" class="feedback-overlay" hidden aria-live="polite" aria-atomic="true">
@@ -203,6 +216,11 @@
     </div>
   </div>
 
+  <!-- ═══ Frame switcher (temporary — remove div + css/frames.css to hide) ═══ -->
+  <div id="frame-switcher" class="frame-switcher" role="toolbar" aria-label="Switch frame layout">
+    <!-- Buttons injected by frames.js -->
+  </div>
+
   <!-- Anime.js (local) -->
   <script src="js/vendor/anime.min.js"></script>
 
@@ -214,6 +232,7 @@
   <script src="js/audio.js"></script>
   <script src="js/bodmas-locales.js"></script>
   <script src="js/i18n.js"></script>
+  <script src="js/frames.js"></script>
   <script src="js/app.js"></script>
 </body>
 

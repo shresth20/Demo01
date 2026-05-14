@@ -1,0 +1,219 @@
+/* ═══════════════════════════════════════════════════════════
+   FRAMES — Layout configurations for the game
+   Each frame applies via body.frame--N class.
+   Default active frame: frame--2 (current state).
+   ═══════════════════════════════════════════════════════════ */
+
+/* ── Secondary board (hidden unless a dual-board frame is active) ── */
+.board--secondary {
+  display: none;
+}
+
+.board-secondary__content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: radial-gradient(circle, rgba(27,58,107,0.3) 2.5px, transparent 2.5px);
+  background-size: 30px 30px;
+}
+
+.board-secondary__label {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-game-title);
+  color: var(--color-navy);
+  font-weight: var(--font-weight-title);
+  pointer-events: none;
+  user-select: none;
+}
+
+
+/* ══════════════════════════════════
+   FRAME 01 — Transparent board
+   Single board, no background/border
+   ══════════════════════════════════ */
+body.frame--1 #board {
+  background: none;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+
+/* ══════════════════════════════════
+   FRAME 02 — Standard (current state)
+   Single centered white board, full border,
+   decorations at default positions.
+   ══════════════════════════════════ */
+body.frame--2 .board-container {
+  gap: 0;
+}
+
+body.frame--2 #board {
+  background: var(--color-board);
+  border: 2px solid var(--color-border);
+  border-radius: var(--board-radius);
+}
+
+/* Frame02 decoration positions (matches style.css base — source of truth for default layout) */
+body.frame--2 .deco--times3-tl  { top: 9.5vh;  left: 3vw; }
+body.frame--2 .deco--pencil     { top: 15.5vh; left: 2vw; }
+body.frame--2 .deco--times-grn-l{ top: 15vh;   left: 12.5vw; }
+body.frame--2 .deco--eq-red-l   { top: 28vh;   left: 11vw; }
+body.frame--2 .deco--half-l     { top: 30vh;   left: 5vw; }
+
+body.frame--2 .deco--half-r     { top: 10vh;  right: 17.5vw; }
+body.frame--2 .deco--bodmas     { top: 12vh;  right: 6.5vw; }
+body.frame--2 .deco--times-grn  { top: 13vh;  right: 5vw; }
+body.frame--2 .deco--eq-red-r   { top: 23vh;  right: 13vw; }
+body.frame--2 .deco--times3-tr  { top: 24vh;  right: 5vw; }
+
+body.frame--2 .deco--calc       { top: 65vh; right: 1vw; }
+body.frame--2 .deco--plus-br    { top: 65vh; right: 7vw; }
+body.frame--2 .deco--vector-br  { top: 73vh; right: 12vw; }
+body.frame--2 .deco--pi-br      { top: 86vh; right: 12vw; }
+body.frame--2 .deco--equaction  { top: 69vh; left: 3vw; }
+
+
+/* ══════════════════════════════════
+   FRAME 03 — Dual Board
+   Two boards side by side. Left: game content.
+   Right: Interactive area placeholder.
+   Decorations pushed to outer viewport edges.
+   ══════════════════════════════════ */
+body.frame--3 .board-container {
+  gap: clamp(12px, 1.5vw, 20px);
+}
+
+body.frame--3 #board-secondary {
+  display: flex;
+  flex: 1;
+  background: none;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+/* Frame03 decoration overrides — pushed to outer edges */
+body.frame--3 .deco--times3-tl  { top: 9.5vh;  left: 3vw; }
+body.frame--3 .deco--pencil     { top: 15.5vh; left: 2vw; }
+body.frame--3 .deco--times-grn-l{ top: 15vh;   left: 12.5vw; }
+body.frame--3 .deco--eq-red-l   { top: 28vh;   left: 11vw; }
+body.frame--3 .deco--half-l     { top: 30vh;   left: 5vw; }
+
+body.frame--3 .deco--half-r     { top: 10vh;  right: 17.5vw; }
+body.frame--3 .deco--bodmas     { top: 12vh;  right: 6.5vw; }
+body.frame--3 .deco--times-grn  { top: 13vh;  right: 5vw; }
+body.frame--3 .deco--eq-red-r   { top: 23vh;  right: 13vw; }
+body.frame--3 .deco--times3-tr  { top: 24vh;  right: 5vw; }
+
+body.frame--3 .deco--calc       { top: 65vh; right: 1vw; }
+body.frame--3 .deco--plus-br    { top: 65vh; right: 7vw; }
+body.frame--3 .deco--vector-br  { top: 73vh; right: 12vw; }
+body.frame--3 .deco--pi-br      { top: 86vh; right: 12vw; }
+body.frame--3 .deco--equaction  { top: 69vh; left: 3vw; }
+
+
+/* ══════════════════════════════════
+   FRAME 04 — Dual Board (Alt)
+   Same dual-board structure as Frame03.
+   Decorations in alternate positions.
+   ══════════════════════════════════ */
+body.frame--4 .board-container {
+  gap: clamp(12px, 1.5vw, 20px);
+}
+
+body.frame--4 #board-secondary {
+  display: flex;
+  flex: 1;
+}
+
+body.frame--4 .board-secondary__content {
+  background-image: none;
+}
+
+/* Frame04 decoration overrides — shifted alt pattern */
+body.frame--4 .deco--times3-tl  { top: 9.5vh;  left: 3vw; }
+body.frame--4 .deco--pencil     { top: 15.5vh; left: 2vw; }
+body.frame--4 .deco--times-grn-l{ top: 15vh;   left: 12.5vw; }
+body.frame--4 .deco--eq-red-l   { top: 28vh;   left: 11vw; }
+body.frame--4 .deco--half-l     { top: 30vh;   left: 5vw; }
+
+body.frame--4 .deco--half-r     { top: 10vh;  right: 17.5vw; }
+body.frame--4 .deco--bodmas     { top: 12vh;  right: 6.5vw; }
+body.frame--4 .deco--times-grn  { top: 13vh;  right: 5vw; }
+body.frame--4 .deco--eq-red-r   { top: 23vh;  right: 13vw; }
+body.frame--4 .deco--times3-tr  { top: 24vh;  right: 5vw; }
+
+body.frame--4 .deco--calc       { top: 65vh; right: 1vw; }
+body.frame--4 .deco--plus-br    { top: 65vh; right: 7vw; }
+body.frame--4 .deco--vector-br  { top: 73vh; right: 12vw; }
+body.frame--4 .deco--pi-br      { top: 86vh; right: 12vw; }
+body.frame--4 .deco--equaction  { top: 69vh; left: 3vw; }
+
+
+/* ══════════════════════════════════
+   FRAME SWITCHER — Temporary UI
+   Small button panel, bottom-right corner.
+   Remove this block (and the HTML) to hide it.
+   ══════════════════════════════════ */
+.frame-switcher {
+  position: fixed;
+  bottom: calc(var(--footer-h) + clamp(8px, 1vw, 14px));
+  right: clamp(10px, 1.2vw, 18px);
+  z-index: 98; /* just below header/footer chrome (99) */
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4px, 0.5vw, 6px);
+  pointer-events: auto;
+}
+
+.frame-btn {
+  width: clamp(28px, 3.5vw, 40px);
+  height: clamp(28px, 3.5vw, 40px);
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1.5px solid rgba(27, 58, 107, 0.22);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  transition: background var(--dur-fast), border-color var(--dur-fast), transform var(--dur-fast);
+  padding: 0;
+  box-shadow: 0 2px 8px rgba(27, 58, 107, 0.1);
+}
+
+.frame-btn:hover:not(.frame-btn--active) {
+  background: rgba(27, 58, 107, 0.08);
+  border-color: rgba(27, 58, 107, 0.4);
+}
+
+.frame-btn:active {
+  transform: scale(0.92);
+}
+
+.frame-btn--active {
+  background: var(--color-navy);
+  border-color: var(--color-navy);
+  box-shadow: 0 2px 8px rgba(27, 58, 107, 0.35);
+}
+
+/* SVG icon colour: default navy-faint, active white */
+.frame-btn svg {
+  pointer-events: none;
+  display: block;
+}
+
+.frame-btn svg rect,
+.frame-btn svg path {
+  transition: fill var(--dur-fast), stroke var(--dur-fast);
+}
+
+.frame-btn--active svg rect.board-fill {
+  fill: rgba(255, 255, 255, 0.9);
+}
+
+.frame-btn--active svg rect.board-outline {
+  stroke: rgba(255, 255, 255, 0.9);
+  fill: rgba(255, 255, 255, 0.2);
+}

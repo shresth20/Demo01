@@ -21,6 +21,7 @@
 }
 
 :root {
+  /* ── Colors ── */
   --color-bg: #FFFEF6;
   --color-board: #FFFFFF;
   --color-navy: #1B3A6B;
@@ -36,44 +37,67 @@
   --color-highlight: #FDE68A;
   --color-border: #BDBDBD;
   --color-shadow-lg: rgba(0,0,0,0.13);
+  --color-soft-blue: #F0F5FF;
+  --color-panel-soft: #EEF3FA;
+  --color-overlay: rgba(15, 30, 60, 0.42);
+  --color-correct-text: #15803D;
+  --color-wrong-text: #B91C1C;
+  --shadow-submit: 0 4px 18px rgba(245, 182, 26, 0.4);
+  --shadow-navy: 0 4px 18px rgba(27, 58, 107, 0.22);
 
-  /* Lilita One: titles & headers — weight 400 only (naturally bold display) */
+  /* ── Fonts ── */
   --font-primary: 'Lilita One', system-ui, sans-serif;
-  /* Nunito: body & normal text — supports variable weight 100–900 */
   --font-accent: 'Nunito', system-ui, -apple-system, sans-serif;
-
   --font-weight-title: 500;
   --font-weight-body:  500;
 
-  /* Popup font sizes */
-  --font-size-popup-body:  clamp(14px, 1.5vw, 18px);
-  --font-size-popup-title: clamp(27px, 2.5vw, 30px);
+  /* ── Fluid font scale: 1024px (7″ Lenovo M7) → 2960px (14.6″ Samsung S8 Ultra) ── */
+  --font-xs:      clamp(10px, 1.2vw, 13px);   /* labels, badges, timestamps */
+  --font-sm:      clamp(12px, 1.5vw, 15px);   /* captions, tooltips, hints */
+  --font-base:    clamp(14px, 1.8vw, 18px);   /* body text, descriptions */
+  --font-md:      clamp(16px, 2.2vw, 22px);   /* UI labels, menu items */
+  --font-lg:      clamp(18px, 2.8vw, 26px);   /* subheadings, section titles */
+  --font-xl:      clamp(22px, 3.5vw, 32px);   /* headings, panel titles */
+  --font-2xl:     clamp(28px, 4.5vw, 42px);   /* screen titles, level names */
+  --font-display: clamp(36px, 6vw,   60px);   /* hero text, score display */
 
-  /* Game-content font sizes */
-  --font-size-game-body:  clamp(18px, 2vw, 21px);
-  --font-size-game-title: clamp(27px, 3vw, 36px);
+  /* ── Legacy aliases — mapped to new fluid scale ── */
+  --font-size-popup-body:  var(--font-base);
+  --font-size-popup-title: var(--font-xl);
+  --font-size-game-body:   var(--font-lg);
+  --font-size-game-title:  var(--font-xl);
+  --font-size-sm:          var(--font-sm);
+  --font-size-base:        var(--font-base);
+  --font-size-lg:          var(--font-lg);
+  --font-size-xl:          var(--font-xl);
+  --font-size-expr:        clamp(30px, 4vw, 40px);   /* math expression display */
 
-  /* Legacy aliases — kept for backward compat, updated to new minimums */
-  --font-size-sm:   clamp(14px, 1.5vw, 17px);
-  --font-size-base: clamp(14px, 1.5vw, 17px);
-  --font-size-lg:   clamp(18px, 2vw, 23px);
-  --font-size-xl:   clamp(27px, 3vw, 36px);
-  --font-size-expr: clamp(30px, 4vw, 48px);
+  /* ── Touch-optimized element sizes (min 44×44px per Apple HIG / Material) ── */
+  --size-icon-sm:   clamp(32px, 4vw, 48px);   /* small icons */
+  --size-icon-md:   clamp(40px, 5vw, 60px);   /* standard icons */
+  --size-icon-lg:   clamp(48px, 6vw, 72px);   /* primary action icons */
+  --size-btn-sm:    clamp(36px, 5vw, 52px);   /* small buttons (height) */
+  --size-btn-md:    clamp(44px, 6vw, 64px);   /* standard buttons (height) */
+  --size-btn-lg:    clamp(52px, 7vw, 80px);   /* CTA / primary buttons (height) */
 
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 16px;
-  --space-lg: 24px;
-  --space-xl: 40px;
+  /* ── Fluid spacing ── */
+  --space-xs:  clamp(4px,  0.5vw, 8px);
+  --space-sm:  clamp(8px,  1vw,   14px);
+  --space-md:  clamp(14px, 2vw,   22px);
+  --space-lg:  clamp(20px, 3vw,   32px);
+  --space-xl:  clamp(28px, 4vw,   48px);
+  --space-2xl: clamp(40px, 5vw,   64px);
 
+  /* ── Structure ── */
   --board-radius: 20px;
   --card-radius: 14px;
   --btn-radius: 50px;
 
-  --header-h: 80px;
-  --footer-h: 73px;
-  
-/* Z-Index Layers */
+  /* Fluid header/footer: scale with viewport height, clamped for readability */
+  --header-h: clamp(64px, 8vh, 88px);
+  --footer-h: clamp(72px, 9vh, 96px);
+
+  /* ── Z-Index Layers ── */
   --z-bg: 1;
   --z-board: 20;
   --z-deco: 30;
@@ -84,17 +108,10 @@
   --z-popups: 9998;
   --z-overlay: 9999;
 
+  /* ── Motion ── */
   --dur-fast: 150ms;
   --dur-normal: 350ms;
-  --ease-out: cubic-bezier(0.25,0.46,0.45,0.94);
-
-  --color-soft-blue: #F0F5FF;
-  --color-panel-soft: #EEF3FA;
-  --color-overlay: rgba(15, 30, 60, 0.42);
-  --color-correct-text: #15803D;
-  --color-wrong-text: #B91C1C;
-  --shadow-submit: 0 4px 18px rgba(245, 182, 26, 0.4);
-  --shadow-navy: 0 4px 18px rgba(27, 58, 107, 0.22);
+  --ease-out: cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -110,8 +127,8 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── Layer 2: Board ── */
-.board {
+/* ── Layer 2: Board container (fixed positioning carrier) ── */
+.board-container {
   position: fixed;
   left: 50%;
   transform: translateX(-50%);
@@ -119,10 +136,19 @@ body {
   bottom: var(--footer-h);
   width: 90%;
   max-width: 1350px;
+  z-index: var(--z-board);
+  display: flex;
+  flex-direction: row;
+  gap: 0;
+}
+
+/* ── Layer 2: Board (content card within container) ── */
+.board {
+  flex: 1;
+  position: relative;
   background: var(--color-board);
   border-radius: var(--board-radius);
   border: 2px solid var(--color-border);
-  z-index: var(--z-board);
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -206,7 +232,7 @@ body {
 }
 
 .header__right {
-  display: flex; align-items: center; gap: 6px;
+  display: flex; align-items: center; gap: clamp(4px, 0.6vw, 10px);
 }
 
 /* ── Layer 5: Footer ── */
@@ -223,7 +249,8 @@ body {
 
 /* ── Icon buttons ── */
 .icon-btn {
-  width: 44px; height: 44px; min-width: 44px; min-height: 44px;
+  width: var(--size-icon-md); height: var(--size-icon-md);
+  min-width: 44px; min-height: 44px;
   border: none;
   outline: none;
   background: transparent;
@@ -234,7 +261,7 @@ body {
   padding: 0;
   border-radius: 50%;
 }
-.icon-btn img { width: 44px; height: 44px; object-fit: contain; display: block; }
+.icon-btn img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .icon-btn:hover { background-color: #3BC6FF; }
 .icon-btn:active { background-color: #FFDF50; transform: scale(0.93); }
 
@@ -248,8 +275,8 @@ body {
   border: none;
   outline: none;
   border-radius: var(--btn-radius);
-  padding: 14px 52px;
-  min-height: 52px;
+  padding: var(--space-sm) clamp(36px, 4vw, 64px);
+  min-height: var(--size-btn-lg);
   cursor: pointer;
   transition: background var(--dur-fast), transform var(--dur-fast), opacity var(--dur-fast);
   box-shadow: var(--shadow-submit);
@@ -267,14 +294,14 @@ body {
 .progress-track {
   background:#F5F5F5;
   border-radius: 50px;
-  padding: 12px 18px;
+  padding: clamp(8px, 1vw, 12px) clamp(12px, 1.5vw, 20px);
   display: flex; align-items: center;
 }
 
-.progress-dots { display: flex; align-items: center; gap: 8px; }
+.progress-dots { display: flex; align-items: center; gap: clamp(6px, 0.8vw, 10px); }
 
 .dot {
-  width: 20px; height: 20px; border-radius: 50%;
+  width: clamp(14px, 2vw, 22px); height: clamp(14px, 2vw, 22px); border-radius: 50%;
   background: var(--color-dot-empty);
   transition: background var(--dur-normal), transform var(--dur-normal);
   flex-shrink: 0;
@@ -362,7 +389,7 @@ body {
   font-family: var(--font-accent);
   font-size: var(--font-size-game-body); font-weight: var(--font-weight-body);
   border: none; outline: none; border-radius: var(--btn-radius);
-  padding: 14px 44px; min-height: 52px; cursor: pointer;
+  padding: var(--space-sm) clamp(32px, 4vw, 52px); min-height: var(--size-btn-md); cursor: pointer;
   opacity: 0; pointer-events: none;
   transition: transform var(--dur-fast), background var(--dur-fast);
   box-shadow: var(--shadow-navy);
@@ -397,13 +424,16 @@ body {
   background: #fff;
   border: 2.5px solid rgba(27,58,107,0.14);
   border-radius: var(--card-radius);
-  padding: clamp(12px,2vw,22px);
-  min-height: 64px;
+  padding: clamp(12px, 2vw, 22px);
+  min-height: clamp(64px, 9vh, 100px);
   font-family: var(--font-accent);
-  font-size: clamp(18px,3vw,32px); font-weight: var(--font-weight-body);
+  font-size: var(--font-xl); font-weight: var(--font-weight-body);
   color: var(--color-navy);
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
+  text-align: center;
+  word-break: break-word;
+  overflow-wrap: break-word;
   transition: border-color var(--dur-fast), background var(--dur-fast),
               transform var(--dur-fast), box-shadow var(--dur-fast);
   touch-action: manipulation; user-select: none;
@@ -544,8 +574,8 @@ body {
 }
 
 .modal-close img{
-  width: 34px; height: 34px;
-
+  width: clamp(25px, 3.5vw, 35px);
+  height: clamp(25px, 3.5vw, 35px);
 }
 
 .modal-title {
@@ -594,12 +624,12 @@ body {
   padding: 11px 16px;
 }
 .modal-step__num {
-  width: 30px; height: 30px;
+  width: clamp(28px, 3.5vw, 38px); height: clamp(28px, 3.5vw, 38px);
   border-radius: 50%;
   flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-accent);
-  font-size: 16px; font-weight: var(--font-weight-body);
+  font-size: var(--font-sm); font-weight: var(--font-weight-body);
   color: #fff;
 }
 .modal-step__text {
@@ -674,7 +704,7 @@ body {
 .lang-list::-webkit-scrollbar-thumb { background: rgba(27,58,107,0.25); border-radius: 99px; }
 .lang-list::-webkit-scrollbar-thumb:hover { background: rgba(27,58,107,0.45); }
 .lang-list { scrollbar-width: thin; scrollbar-color: rgba(27,58,107,0.25) transparent; }
-.lang-list--upward { top: auto; bottom: calc(100% + 6px); }
+.lang-list--downward { top: auto; bottom: calc(100% + 6px); }
 .lang-option--selected { background: rgba(27,58,107,0.1); }
 .lang-actions { display: flex; gap: 12px; }
 .btn-lang-cancel {
@@ -754,8 +784,13 @@ body {
   font-family: var(--font-accent);
   font-size: var(--font-size-popup-body); font-weight: var(--font-weight-body);
   border: none; outline: none; border-radius: var(--btn-radius);
-  padding: 13px 44px; min-height: 48px; cursor: pointer;
+  padding: var(--space-sm) clamp(32px, 4vw, 52px); min-height: var(--size-btn-md); cursor: pointer;
   transition: transform var(--dur-fast), background var(--dur-fast);
   box-shadow: var(--shadow-submit);
 }
 .btn-summary-play:hover { transform: translateY(-2px); background: var(--color-submit-hover); }
+
+/* ── Game asset sizing utilities ── */
+.game-asset    { object-fit: contain; aspect-ratio: 16 / 10; width: 100%; }
+.bg-layer      { object-fit: cover; width: 100vw; height: 100vh; }
+.character-img { object-fit: contain; width: clamp(80px, 12vw, 160px); }

@@ -1,41 +1,337 @@
-/* Tablet landscape (768px+) */
+/* ═══════════════════════════════════════════════════════════════════
+   RESPONSIVE — Ultra-fluid layout for 15 tablet targets
+   Range: Lenovo Tab M7 (7″ / 1024×600 CSS px)
+       → Samsung S8 Ultra (14.6″ / ~1480×924 CSS px at DPR 2)
+   Aspect ratios: 4:3 (iPad family) · 16:10 (Samsung/Lenovo) · 16:9 (M7)
+   ═══════════════════════════════════════════════════════════════════ */
+
+
+/* ────────────────────────────────────────────────────────────────
+   TIER 1 — All tablets 768px+ (safe baseline for every target)
+   Covers: iPad mini portrait, Samsung Tab A8 landscape,
+           Lenovo M10 landscape, and every larger device.
+   ──────────────────────────────────────────────────────────────── */
 @media (min-width: 768px) {
-  :root {
-    --header-h: 85px;
-    --footer-h: 75px;
+  .options-grid {
+    gap: clamp(12px, 1.6vw, 18px);
+    max-width: clamp(460px, 60vw, 600px);
+  }
+  .header__right { gap: clamp(6px, 0.8vw, 10px); }
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   TIER 2 — Mid tablets 1024px+
+   Covers: Lenovo M7 landscape, iPad mini landscape,
+           Samsung Tab A8 portrait at ~960px CSS width.
+   ──────────────────────────────────────────────────────────────── */
+@media (min-width: 1024px) {
+  .board-container {
+    max-width: clamp(900px, 88vw, 1400px);
   }
   .options-grid {
-    gap: 14px;
-    max-width: 580px;
+    max-width: clamp(500px, 55vw, 640px);
+    gap: clamp(14px, 1.8vw, 20px);
+  }
+  .explore-annotation { max-width: clamp(460px, 52vw, 620px); }
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   TIER 3 — Large tablets 1280px+
+   Covers: Samsung S8 11", Lenovo Tab P11 Pro Gen 2 landscape,
+           iPad Pro 11" landscape, iPad Air landscape.
+   ──────────────────────────────────────────────────────────────── */
+@media (min-width: 1280px) {
+  .board-container {
+    max-width: clamp(1100px, 88vw, 1500px);
+    width: calc(100% - clamp(60px, 6vw, 100px));
+  }
+  .options-grid {
+    max-width: clamp(560px, 52vw, 680px);
+    gap: clamp(16px, 2vw, 22px);
   }
 }
 
-/* Large screens / interactive panels */
-@media (min-width: 1080px) {
-  .board {
+
+/* ────────────────────────────────────────────────────────────────
+   TIER 4 — XL tablets 1440px+
+   Covers: Samsung S8+ / S8 Ultra landscape,
+           Lenovo Tab P12 landscape, iPad Pro 13" landscape.
+   ──────────────────────────────────────────────────────────────── */
+@media (min-width: 1440px) {
+  .board-container {
+    max-width: 1600px;
+    width: calc(100% - clamp(80px, 8vw, 140px));
+  }
+  .options-grid {
+    max-width: clamp(600px, 48vw, 720px);
+    gap: clamp(18px, 2.2vw, 26px);
+  }
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   ASPECT RATIO — 4:3 iPad family (portrait-friendly)
+   More vertical space available; stack layouts vertically,
+   increase vertical breathing room.
+   ──────────────────────────────────────────────────────────────── */
+@media (max-aspect-ratio: 4/3) {
+  .board-container { width: 92%; }
+
+  .explore-screen {
+    gap: var(--space-xl);
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-xl);
+  }
+  .practice-screen {
+    gap: var(--space-lg);
+    padding-top: var(--space-lg);
+    padding-bottom: var(--space-lg);
+  }
+  .options-grid { max-width: clamp(460px, 70vw, 600px); }
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   ASPECT RATIO — 16:10 Samsung Galaxy / Lenovo (wider canvas)
+   Use horizontal space; tighten vertical padding.
+   ──────────────────────────────────────────────────────────────── */
+@media (min-aspect-ratio: 16/10) {
+  .board-container {
+    width: calc(100% - clamp(40px, 5vw, 80px));
     max-width: 1500px;
-    width: calc(100% - 86px);
   }
-  .options-grid {
-    max-width: 620px;
-    gap: 18px;
+  .explore-screen {
+    padding: clamp(10px, 2vh, 24px) clamp(24px, 5vw, 72px);
   }
+  .practice-screen {
+    padding: clamp(8px, 1.5vh, 20px) clamp(20px, 4vw, 56px);
+  }
+  .options-grid { max-width: clamp(480px, 52vw, 640px); }
 }
 
-/* Small landscape (height < 520px) — compact layout */
+
+/* ────────────────────────────────────────────────────────────────
+   SMALLEST TARGET — Lenovo Tab M7 ~1024×600 CSS px (16:9 budget)
+   Compact mode: reduce spacing by ~20%, hide non-critical deco.
+   ──────────────────────────────────────────────────────────────── */
+@media (max-width: 1024px) and (max-height: 600px) {
+  :root {
+    --header-h: 52px;
+    --footer-h: 60px;
+    /* Tighten spacing by ~20% for the tightest viewport */
+    --space-xs:  3px;
+    --space-sm:  6px;
+    --space-md:  10px;
+    --space-lg:  16px;
+    --space-xl:  22px;
+    --space-2xl: 32px;
+  }
+
+  .progress-track { padding: 5px 10px; }
+  .progress-dots  { gap: 5px; }
+  .dot            { width: 12px; height: 12px; }
+
+  .explore-screen  { gap: 8px;  padding: 6px 20px; }
+  .practice-screen { gap: 6px;  padding: 4px 16px; }
+  .loading-screen  { gap: 10px; padding: 12px; }
+
+  .explore-expression-wrap  { min-height: 40px; }
+  .explore-annotation-wrap  { min-height: 32px; }
+  .options-grid { max-width: 380px; gap: 8px; }
+  .option-card  { min-height: 52px; padding: 8px; }
+
+  /* Hide bulky decorations — preserve content real estate */
+  .deco { display: none; }
+
+  /* Compact feedback toast */
+  .feedback-toast { font-size: var(--font-sm); padding: 8px 12px; }
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   SMALL LANDSCAPE — height < 520px in any orientation
+   Shrink chrome, compress vertical gaps so board stays usable.
+   ──────────────────────────────────────────────────────────────── */
 @media (max-height: 520px) and (orientation: landscape) {
   :root {
     --header-h: 48px;
-    --footer-h: 60px;
+    --footer-h: 56px;
   }
-  .loading-screen    { gap: 12px; }
-  .explore-screen    { gap: 10px; }
-  .practice-screen   { gap: 8px; }
+
+  .loading-screen  { gap: 10px; padding: 8px; }
+  .explore-screen  { gap: 8px;  padding: 8px clamp(16px, 4vw, 48px); }
+  .practice-screen { gap: 6px;  padding: 6px clamp(12px, 3vw, 40px); }
+
+  .explore-expression-wrap  { min-height: 44px; }
+  .explore-annotation-wrap  { min-height: 30px; }
+
+  /* Hide space-consuming decorations */
+  .deco--pencil,
+  .deco--calc,
+  .deco--equaction,
+  .deco--bodmas { display: none; }
 }
 
-/* Very narrow screens */
+
+/* ────────────────────────────────────────────────────────────────
+   PORTRAIT ORIENTATION — all tablets in portrait mode
+   Stack feedback vertically; hide large edge decorations
+   that collide with narrower portrait widths.
+   ──────────────────────────────────────────────────────────────── */
+@media (orientation: portrait) {
+  /* Large image decos clip content at portrait widths */
+  .deco--pencil,
+  .deco--calc,
+  .deco--equaction,
+  .deco--bodmas { display: none; }
+
+  /* Stack feedback char + toast vertically */
+  .feedback-overlay {
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: var(--space-sm);
+    padding-bottom: var(--space-sm);
+  }
+  .feedback-toast {
+    max-width: 88%;
+    text-align: center;
+  }
+  .feedback-char-gif {
+    align-self: center;
+    width: clamp(80px, 14vw, 140px);
+  }
+  .feedback-char-gif--correct {
+    width: clamp(90px, 16vw, 160px);
+    transform: none;
+  }
+
+  /* More vertical room for options */
+  .options-grid { max-width: clamp(380px, 75vw, 560px); }
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   NARROW LANDSCAPE — width ≤ 480px in landscape
+   Applies to very small budget devices in landscape mode.
+   ──────────────────────────────────────────────────────────────── */
 @media (max-width: 480px) and (orientation: landscape) {
-  .board { width: 94%; }
-  .options-grid { max-width: 400px; gap: 8px; }
-  .btn-submit { padding: 12px 36px; }
+  .board-container { width: 94%; }
+  .options-grid    { max-width: 400px; gap: 8px; }
+  .btn-submit      { padding: var(--space-sm) clamp(24px, 3vw, 40px); }
+  .deco            { display: none; }
+}
+
+
+/* ────────────────────────────────────────────────────────────────
+   SAFE ZONE — ensure modal stays within central 80% on all targets
+   ──────────────────────────────────────────────────────────────── */
+.modal-overlay { padding: clamp(12px, 3vw, 40px); }
+
+@media (max-width: 900px) {
+  .modal-card     { max-width: min(540px, 92vw); }
+  #lang-card      { max-width: min(500px, 92vw); }
+  .modal-character { display: none; }   /* prevent overflow on narrow portrait */
+  #lang-select-view { padding: 0 clamp(16px, 3vw, 44px); }
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   LAPTOP OVERRIDE — 1024px and above
+   Caps the maximum values of all fluid clamp() variables so the UI
+   does not appear tablet-scaled on laptop screens. Min/preferred values
+   are unchanged — tablet responsiveness below 1024px is unaffected.
+   Targets: 13.3″ FHD (1920×1080) → 17.3″ gaming (2560×1600 CSS px).
+   ════════════════════════════════════════════════════════════════════ */
+@media (min-width: 1024px) {
+
+  :root {
+    /* ── Typography — tighten max caps for laptop density ── */
+    --font-xs:      clamp(10px, 1.2vw, 12px);
+    --font-sm:      clamp(12px, 1.5vw, 14px);
+    --font-base:    clamp(14px, 1.8vw, 16px);
+    --font-md:      clamp(16px, 2.2vw, 18px);
+    --font-lg:      clamp(18px, 2.8vw, 22px);
+    --font-xl:      clamp(22px, 3.5vw, 28px);
+    --font-2xl:     clamp(28px, 4.5vw, 36px);
+    --font-display: clamp(36px, 6vw,   48px);
+
+    /* ── Icons & buttons — prevent over-growth beyond touch minimums ── */
+    --size-icon-sm:   clamp(32px, 4vw, 36px);
+    --size-icon-md:   clamp(40px, 5vw, 44px);
+    --size-icon-lg:   clamp(48px, 6vw, 52px);
+    --size-btn-sm:    clamp(36px, 5vw, 40px);
+    --size-btn-md:    clamp(44px, 6vw, 48px);
+    --size-btn-lg:    clamp(52px, 7vw, 56px);
+
+    /* ── Spacing — compress max values for laptop content density ── */
+    --space-xs:  clamp(4px,  0.5vw,  6px);
+    --space-sm:  clamp(8px,  1vw,   10px);
+    --space-md:  clamp(14px, 2vw,   16px);
+    --space-lg:  clamp(20px, 3vw,   24px);
+    --space-xl:  clamp(28px, 4vw,   32px);
+    --space-2xl: clamp(40px, 5vw,   44px);
+  }
+
+  /* Cap main game board so it doesn't stretch across ultra-wide displays */
+  .board-container {
+    max-width: min(2100px, 100vw);
+  }
+
+  /* Cap panel / card / modal containers to 72vw on laptop canvases */
+  .game-panel,
+  .game-card,
+  .modal-container,
+  .modal-card,
+  #lang-card {
+    /* max-width: min(860px, 72vw); */
+    margin-inline: auto;
+  }
+
+  /* Cap full game wrapper if it exists */
+  .game-canvas,
+  .game-wrapper {
+    max-width: 1100px;
+    margin-inline: auto;
+  }
+
+  /* Toolbar icon row (top-right header buttons) */
+  .header__right .icon-btn,
+  .toolbar-icons .icon-btn {
+    width:  var(--size-icon-md);
+    height: var(--size-icon-md);
+  }
+
+  /* Decorative math symbols — reduce visual weight on laptop */
+  .deco-symbol {
+    font-size: clamp(12px, 1.5vw, 16px);
+    opacity: 0.5;
+  }
+}
+
+
+/* ════════════════════════════════════════════════════════════════════
+   HIGH-RES LAPTOP OVERRIDE — 1440px and above (2K / Retina)
+   Applies additional caps for MacBook Pro 14/16", Samsung Book Flex 4K,
+   and Lenovo Legion 2560×1600 — prevents hero text ballooning on HiDPI.
+   ════════════════════════════════════════════════════════════════════ */
+@media (min-width: 1440px) {
+
+  :root {
+    --font-display: clamp(36px, 4vw, 44px);
+    --font-2xl:     clamp(28px, 3vw, 30px);
+  }
+
+  .board-container {
+    max-width: min(2200px, 100vw);
+  }
+
+  .game-panel,
+  .game-card,
+  .modal-container,
+  .modal-card,
+  #lang-card {
+    /* max-width: min(920px, 64vw); */
+  }
 }
