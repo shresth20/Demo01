@@ -335,3 +335,378 @@
     /* max-width: min(920px, 64vw); */
   }
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   SMARTPHONE LANDSCAPE ONLY
+   Tablet (≥600px portrait) and Laptop (≥1024px) are UNTOUCHED.
+   Target heights: 360–480px CSS px (dynamic viewport via 100dvh).
+   Devices: iPhone SE → iPhone 16 Pro Max, Galaxy S25 series, Pixels.
+   ═══════════════════════════════════════════════════════════════════ */
+@media (max-width: 900px) and (orientation: landscape) {
+
+  :root {
+    /* ── Shrink chrome heights — repositions .board-container automatically ── */
+    --header-h: 44px;
+    --footer-h: 50px;
+
+    /* ── Button min-heights must fit inside the new --footer-h ── */
+    --size-btn-lg: 36px;   /* .btn-submit uses this */
+    --size-btn-md: 32px;   /* .btn-summary-play, .btn-start-practice */
+    --size-icon-md: clamp(28px, 6vh, 34px);
+
+    /* ── Math expression font — fluid between screens ── */
+    --font-size-expr: clamp(20px, 5vh, 28px);
+
+    /* ── Compress spacing ── */
+    --space-xs:  2px;
+    --space-sm:  clamp(4px, 1vh, 6px);
+    --space-md:  clamp(6px, 1.5vh, 10px);
+    --space-lg:  clamp(8px, 2vh, 12px);
+    --space-xl:  clamp(10px, 2.5vh, 16px);
+    --space-2xl: clamp(14px, 3.5vh, 20px);
+  }
+
+  /* ════════════════════════════════════
+     HEADER
+     ════════════════════════════════════ */
+  .header {
+    padding: 0 clamp(8px, 2vw, 16px);
+  }
+
+  .progress-track {
+    padding: 3px 8px;
+  }
+
+  .progress-dots {
+    gap: 5px;
+  }
+
+  .dot {
+    width:  clamp(8px, 1.8vh, 11px);
+    height: clamp(8px, 1.8vh, 11px);
+  }
+
+  .header__right {
+    gap: clamp(4px, 1vw, 8px);
+  }
+
+  .icon-btn {
+    width:  var(--size-icon-md);
+    height: var(--size-icon-md);
+    min-width:  32px;
+    min-height: 32px;
+  }
+
+  /* ════════════════════════════════════
+     FOOTER & SUBMIT BUTTON
+     Fix: btn-submit has min-height:--size-btn-lg which was 52–80px.
+     Now --size-btn-lg=36px so it fits the 50px footer.
+     ════════════════════════════════════ */
+  .footer {
+    padding: 0 clamp(12px, 3vw, 24px);
+  }
+
+  .btn-submit {
+    padding: 0 clamp(20px, 5vw, 36px);
+    font-size: clamp(12px, 2.5vh, 14px);
+  }
+
+  /* ════════════════════════════════════
+     EXPLORE SCREEN
+     Fix: justify-content:center wastes top/bottom space,
+          expression-wrap and annotation-wrap have large min-heights
+     ════════════════════════════════════ */
+  .explore-screen {
+    gap: clamp(4px, 1vh, 8px);
+    padding: clamp(6px, 1.5vh, 10px) clamp(12px, 3vw, 24px);
+  }
+
+  .explore-expression-wrap {
+    min-height: 32px;
+  }
+
+  .explore-annotation-wrap {
+    min-height: 22px;
+  }
+
+  .explore-annotation {
+    font-size: clamp(11px, 2.4vh, 13px);
+    line-height: 1.35;
+  }
+
+  .explore-step-counter {
+    font-size: clamp(10px, 2vh, 12px);
+  }
+
+  .btn-start-practice {
+    padding: 0 clamp(16px, 4vw, 28px);
+    font-size: clamp(12px, 2.5vh, 14px);
+  }
+
+  /* ════════════════════════════════════
+     PRACTICE SCREEN
+     Fix: question label, expression, and option cards all oversized
+     ════════════════════════════════════ */
+  .practice-screen {
+    gap: clamp(4px, 1vh, 8px);
+    padding: clamp(6px, 1.5vh, 10px) clamp(12px, 3vw, 24px);
+  }
+
+  .practice-q-label {
+    font-size: clamp(9px, 1.8vh, 11px);
+    letter-spacing: 0.08em;
+  }
+
+  .practice-expression {
+    font-size: var(--font-size-expr);
+  }
+
+  /* ════════════════════════════════════
+     ANSWER OPTIONS GRID (2×2)
+     Fix: option-card has min-height:clamp(64px,9vh,100px)
+          which at 412px = 64px × 2 rows = 128px + gaps
+     ════════════════════════════════════ */
+  .options-grid {
+    gap: clamp(5px, 1.2vh, 8px);
+    max-width: clamp(260px, 65vw, 440px);
+  }
+
+  .option-card {
+    min-height: clamp(36px, 8vh, 48px);
+    padding: clamp(4px, 1vh, 8px);
+    font-size: clamp(14px, 3vh, 18px);
+  }
+
+  /* ════════════════════════════════════
+     HOW TO PLAY MODAL
+     Fix: modal-card has overflow:visible — content truncates.
+          Make card scrollable with a max-height.
+     ════════════════════════════════════ */
+  #htp-card {
+    padding: clamp(10px, 2vh, 14px) clamp(12px, 2.5vw, 18px);
+    max-height: calc(100dvh - 20px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal-title {
+    font-size: clamp(16px, 3.5vh, 20px);
+    margin-bottom: 2px;
+  }
+
+  .modal-subtitle {
+    font-size: clamp(10px, 2vh, 12px);
+    margin-bottom: clamp(6px, 1.5vh, 10px);
+  }
+
+  .modal-steps {
+    gap: clamp(4px, 1vh, 6px);
+  }
+
+  .modal-step {
+    padding: 5px 10px;
+    gap: 9px;
+  }
+
+  .modal-step__num {
+    width:  clamp(20px, 4.5vh, 26px);
+    height: clamp(20px, 4.5vh, 26px);
+    font-size: clamp(9px, 1.8vh, 11px);
+  }
+
+  .modal-step__text {
+    font-size: clamp(10px, 2vh, 12px);
+    line-height: 1.35;
+  }
+
+  /* Hide mascot character in landscape — it hangs outside the card */
+  .modal-character {
+    display: none;
+  }
+
+  /* ════════════════════════════════════
+     LANGUAGE MODAL
+     Fix: .lang-list is position:absolute with max-height:210px.
+          At 412px viewport this list overflows the visible area.
+     ════════════════════════════════════ */
+  #lang-card {
+    padding: clamp(10px, 2vh, 14px) clamp(12px, 2.5vw, 18px);
+    max-height: calc(100dvh - 20px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  #lang-select-view {
+    padding: 0 clamp(8px, 2vw, 14px);
+  }
+
+  .lang-trigger {
+    padding: 8px 12px;
+  }
+
+  .lang-list {
+    max-height: clamp(80px, 18vh, 120px);
+  }
+
+  .lang-option {
+    padding: 8px 12px;
+    font-size: clamp(10px, 2vh, 12px);
+  }
+
+  .lang-actions {
+    gap: 8px;
+  }
+
+  .btn-lang-cancel,
+  .btn-lang-apply {
+    padding: 8px;
+    font-size: clamp(10px, 2vh, 12px);
+  }
+
+  /* ════════════════════════════════════
+     SUMMARY MODAL ("Well Done!")
+     Fix: summary-card padding-top and star margins push content off-screen.
+          Make modal-overlay scrollable as fallback.
+     ════════════════════════════════════ */
+  .modal-overlay {
+    padding: 8px clamp(12px, 3vw, 24px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .summary-card {
+    padding-top: clamp(10px, 2.5vh, 18px);
+  }
+
+  .summary-modal-title {
+    font-size: clamp(18px, 4vh, 24px);
+    margin-bottom: clamp(4px, 1vh, 8px);
+  }
+
+  .summary-stars {
+    gap: clamp(6px, 1.5vh, 10px);
+    margin-bottom: clamp(6px, 1.5vh, 10px);
+  }
+
+  .summary-star {
+    width: clamp(30px, 7vh, 42px);
+  }
+
+  .summary-stars img:nth-child(2) {
+    width: clamp(42px, 10vh, 56px);
+    margin-bottom: clamp(4px, 1vh, 8px);
+  }
+
+  .summary-score-badge {
+    padding: 6px 20px;
+    margin-bottom: clamp(6px, 1.5vh, 10px);
+  }
+
+  .summary-percent {
+    font-size: clamp(20px, 5vh, 28px);
+  }
+
+  .summary-score-label {
+    font-size: clamp(9px, 1.8vh, 11px);
+  }
+
+  .btn-summary-play {
+    padding: 0 clamp(20px, 5vw, 36px);
+    font-size: clamp(12px, 2.5vh, 14px);
+  }
+
+  /* ════════════════════════════════════
+     FEEDBACK OVERLAY
+     ════════════════════════════════════ */
+  .feedback-toast {
+    font-size: clamp(10px, 2vh, 12px);
+    padding: clamp(6px, 1.5vh, 10px) clamp(10px, 2.5vw, 16px);
+  }
+
+  .feedback-char-gif {
+    width: clamp(50px, 12vw, 80px);
+  }
+
+  /* ════════════════════════════════════
+     DECORATIVE ELEMENTS
+     Scale down large image decos so they fit in the ~45px
+     side margins without overlapping board content.
+     ════════════════════════════════════ */
+  .deco--pencil img    { width: 64px; }
+  .deco--bodmas img    { width: 72px; }
+  .deco--calc img      { width: 72px; }
+  .deco--equaction img { width: 90px; }
+}
+
+
+/* ════════════════════════════════════
+   COMPACT PHONES IN LANDSCAPE
+   iPhone SE, older Androids (height ≤ 375px)
+   ════════════════════════════════════ */
+@media (max-width: 812px) and (orientation: landscape) and (max-height: 375px) {
+
+  :root {
+    --header-h: 40px;
+    --footer-h: 44px;
+    --size-btn-lg: 30px;
+    --font-size-expr: 18px;
+  }
+
+  /* 4-column row on ultra-tight screens — avoids 2 rows of tall cards */
+  .options-grid {
+    grid-template-columns: repeat(4, 1fr);
+    max-width: 100%;
+    gap: 4px;
+  }
+
+  .option-card {
+    min-height: clamp(28px, 7vh, 36px);
+    font-size: clamp(11px, 2.5vh, 13px);
+    padding: 2px 4px;
+  }
+
+  .explore-screen,
+  .practice-screen {
+    gap: 3px;
+    padding: 4px 10px;
+  }
+
+  .explore-expression-wrap { min-height: 22px; }
+  .explore-annotation-wrap { min-height: 16px; }
+
+  /* All decos off at smallest landscape — content first */
+  .deco { display: none; }
+}
+
+
+/* ════════════════════════════════════
+   FOLDABLES IN LANDSCAPE (half-open)
+   Galaxy Z Fold, Pixel Fold — wide but also taller (h ≥ 500px)
+   These have enough height to use near-normal tablet values.
+   ════════════════════════════════════ */
+@media (min-width: 800px) and (max-width: 1023px) and (orientation: landscape) and (min-height: 500px) {
+
+  :root {
+    --header-h: clamp(52px, 8vh, 68px);
+    --footer-h: clamp(58px, 9vh, 74px);
+    --size-btn-lg: clamp(44px, 7vh, 56px);
+  }
+
+  .options-grid {
+    gap: var(--space-md);
+    max-width: clamp(360px, 55vw, 480px);
+  }
+
+  .option-card {
+    min-height: clamp(48px, 8vh, 64px);
+  }
+
+  /* Decorations visible on foldables — enough vertical room */
+  .deco--pencil,
+  .deco--calc,
+  .deco--equaction,
+  .deco--bodmas {
+    display: block;
+  }
+}
