@@ -12,6 +12,33 @@ The project is designed to run without a build system and without external netwo
 
 ---
 
+## HTML Layer System
+
+`index.html` is organized as a visual layer stack. The layer numbers are documented in the HTML comments and are controlled mostly by z-index tokens in `css/style.css`. The DOM order is useful for readability, but the actual visual priority comes from the CSS variables under `:root`.
+
+| Layer | Main HTML | Main CSS | Purpose |
+| --- | --- | --- | --- |
+| Page base | `<body>` | `--color-bg`, `--z-bg` | The fixed game canvas background. Nothing interactive should be placed directly here unless it belongs to the full page shell. |
+| Layer 2: Board carrier | `#board-container`, `#board`, `#board-secondary` | `.board-container`, `.board`, `--z-board` | The main play area between the header and footer. It uses `top: var(--header-h)` and `bottom: var(--footer-h)` so chrome height changes do not cover content. |
+| Layer 3: Decorative assets | `#deco-layer`, `.deco` elements | `.layer-deco`, `.deco-*`, `--z-deco` | Fixed, non-interactive math artwork around the board. This layer uses `pointer-events: none` so it never blocks game clicks. |
+| Layer 4: Active content | `#content-area` | `#content-area`, `--z-content` | The only area that `app.js` replaces per screen. Loading, Explore, and Practice screen markup is injected here by `renderScreen()`. |
+| Layer 5: Persistent chrome | `#header`, `#footer` | `.header`, `.footer`, `--z-chrome` | Always-visible navigation and action controls. Header owns progress, reset, info, language, and fullscreen. Footer owns Submit. |
+| Layer 6: Feedback | `#feedback-overlay` | `.feedback-overlay`, `--z-feedback` | Correct/wrong feedback toast and character GIF. It sits above board/decor/chrome content but below modal and loader overlays. |
+| Celebration overlay | generated `.celebration` | `.celebration`, `--z-confetti` | Temporary confetti layer created from JavaScript on the final correct answer. |
+| Modal overlays | `#htp-modal`, `#lang-modal`, `#summary-modal` | `.modal-overlay`, `--z-popups` | Dialog layer for How to Play, language selection, and summary. These overlays cover the board and chrome. |
+| Loader overlay | `#loader-overlay` | `.loader-overlay`, `--z-overlay` | Highest-priority startup overlay. It blocks interaction until `loader--hidden` is applied. |
+
+Important layer behavior:
+
+- `#content-area` is the safe target for dynamic game screens. Avoid injecting screen content into the header, footer, modal layer, or decorative layer.
+- `#board-secondary` is a placeholder for dual-board frame layouts. It is hidden by default and becomes visible through `body.frame--3` or `body.frame--4` rules in `css/frames.css`.
+- The frame switcher is temporary developer UI. It is fixed near the lower-right corner at z-index `98`, just below the header/footer chrome at `99`.
+- Header and footer heights are CSS variables. Responsive overrides change `--header-h` and `--footer-h`, and the board automatically repositions around them.
+- Decorative assets are intentionally separate from game content. Responsive rules can hide or resize them without touching gameplay markup.
+- New overlays should be assigned deliberately in the z-index stack. Use the existing variables where possible instead of hard-coded values.
+
+---
+
 ## Current Status
 
 - Main entry point: `index.html`
@@ -28,52 +55,6 @@ The project is designed to run without a build system and without external netwo
 - Temporary developer UI: visible frame switcher in the lower-right corner
 
 Recent git history indicates work around frame layouts, tablet responsiveness, phone view fixes, language dropdown/storage fixes, and postMessage completion support.
-
----
-
-## Major Updates Completed
-
-- Added or retained a frame layout system using `js/frames.js` and `css/frames.css`.
-- Added a secondary board placeholder for dual-board frames.
-- Expanded responsive handling for tablets, laptops, high-resolution displays, compact phone landscape, foldables, portrait layouts, and short-height screens.
-- Added a completion `postMessage` payload for parent iframe/LMS hosts.
-- Added `test-postmessage.html` to validate the completion message.
-- Improved language persistence through URL query string and `localStorage`.
-- Added a language dropdown with pending selection, disabled Apply state, confirmation view, and viewport-aware list height/direction behavior.
-- Added Odia (`od`) to the supported language list and BODMAS translations.
-
----
-
-## Minor Updates Completed
-
-- Fullscreen icon, title, and aria-label update on `fullscreenchange`.
-- Button click sound is attached globally to button clicks.
-- Correct and incorrect answer feedback uses local sounds and GIFs.
-- Confetti appears only on the last correct answer and is skipped in portrait orientation.
-- Summary modal localizes title and accuracy label.
-- Option buttons use radio-style ARIA attributes.
-- Progress dots use progressbar ARIA attributes.
-- Modal sizing and scroll behavior are adjusted for compact landscape phones.
-- Large decorative assets are hidden or resized in tight layouts.
-- Laptop and high-resolution overrides cap overly large fluid UI sizes.
-
----
-
-## Important Features Implemented
-
-- Animated Explore walkthrough with highlighted expression segments.
-- Multiple-choice practice with selection state and submit gating.
-- Correct answer flow: mark card, play sound, show rule feedback, optionally confetti, advance.
-- Wrong answer flow: mark card, play sound, show hint feedback, retry same question.
-- Summary star thresholds:
-  - 3 stars: 100% accuracy
-  - 2 stars: at least 80%
-  - 1 star: at least 60%
-  - 0 stars: below 60%
-- Language switching during the game, including current-screen rerender.
-- Fullscreen toggle.
-- Temporary frame layout switching.
-- Completion postMessage for parent containers.
 
 ---
 
@@ -98,7 +79,53 @@ Recent git history indicates work around frame layouts, tablet responsiveness, p
 
 ---
 
-## Code Structure Explanation
+## Code Base Structure Explanation
+
+The project is intentionally small and flat. There is no package manager, bundler, module loader, or transpiler. Browser files load directly from `index.html`, so file names and relative paths matter.
+
+```text
+.
+|-- index.html                 Main HTML shell and layer stack
+|-- HANDOVER.md                Developer handover notes
+|-- README.md                  Project readme
+|-- locales.json               Locale metadata and shared translations
+|-- test-postmessage.html      Parent iframe harness for completion testing
+|-- css/
+|   |-- style.css              Base tokens, layout, screens, modals, feedback
+|   |-- responsive.css         Viewport and orientation overrides
+|   |-- animations.css         Keyframes and reduced-motion fallbacks
+|   `-- frames.css             Temporary frame layout variants
+|-- js/
+|   |-- vendor/anime.min.js    Local Anime.js dependency
+|   |-- utils.js               Small DOM and timing helpers
+|   |-- state.js               Shared GameState object
+|   |-- activities.js          Explore steps and practice question data
+|   |-- animations.js          Animation helpers around Anime.js/CSS fallbacks
+|   |-- audio.js               Sound preload and playback helpers
+|   |-- bodmas-locales.js      Active BODMAS translation strings
+|   |-- i18n.js                Locale loading, merging, storage, and lookup
+|   |-- frames.js              Developer frame switcher and body classes
+|   `-- app.js                 Main controller and event wiring
+|-- assets/
+|   |-- fonts/                 Local Lilita One and Nunito font files
+|   |-- GIFs/                  Loader, correct, and incorrect feedback GIFs
+|   |-- icons/                 Header icons, stars, and decorative math SVGs
+|   |-- images/                Logo, calculator, and character artwork
+|   `-- sounds/                Button, correct, and wrong-answer audio
+|-- .claude/                   Local assistant/developer notes
+|-- .vscode/                   Editor settings
+`-- .gitignore
+```
+
+How the pieces fit together:
+
+- `index.html` owns the stable shell: header, footer, board containers, modals, overlays, decorative layer, and script tags.
+- `css/style.css` is the base visual system. It defines tokens, z-index layers, fixed chrome, board layout, modal styling, feedback styling, and core screen styles.
+- `css/responsive.css` overrides the base layout for tablets, laptops, compact landscape phones, portrait orientation, foldables, and short-height screens.
+- `css/frames.css` is isolated from the main layout because the frame switcher is temporary and experimental.
+- `js/app.js` is the coordinator. It waits for localization, renders the current screen into `#content-area`, attaches events, handles answers, updates progress, opens modals, and sends completion messages.
+- `js/activities.js`, `js/bodmas-locales.js`, and `locales.json` are the main content files for changing the lesson topic, questions, or language text.
+- `assets/` is part of runtime behavior, not just decoration. The app expects local fonts, sounds, GIFs, icons, and images to be present at the current paths.
 
 The app uses plain global scripts. Load order is important because later files read globals from earlier files.
 
