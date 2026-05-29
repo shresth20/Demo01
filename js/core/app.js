@@ -150,12 +150,7 @@ function renderScreen(screenName) {
   var content = qs('#content-area');
   if (!content) return;
 
-  switch (screenName) {
-    case 'loading':   content.innerHTML = buildLoadingHTML();   break;
-    case 'explore':   content.innerHTML = buildExploreHTML();   break;
-    case 'practice':  content.innerHTML = buildPracticeHTML();  break;
-    case 'complete':  content.innerHTML = buildCompleteHTML();  break;
-  }
+  content.innerHTML = ContentRenderer.render(screenName, GameState);
 
   renderProgressDots();
   syncSubmitButton();
@@ -165,62 +160,6 @@ function renderScreen(screenName) {
 }
 
 /* ── HTML builders ─────────────────────────────────── */
-function buildLoadingHTML() {
-  return '<div class="loading-screen"></div>';
-}
-
-function buildExploreHTML() {
-  return [
-    '<div class="explore-screen">',
-      '<div class="explore-label">' + escapeText(I18n.t('bodmasExploreLabel')) + '</div>',
-      '<div class="explore-expression-wrap">',
-        '<div class="explore-expression" id="explore-expr"></div>',
-      '</div>',
-      '<div class="explore-annotation-wrap">',
-        '<div class="explore-annotation" id="explore-anno" style="opacity:0"></div>',
-      '</div>',
-      '<div class="explore-step-counter" id="explore-step-counter"></div>',
-      '<button class="btn-start-practice" id="btn-start-practice">',
-        escapeText(I18n.t('bodmasStartPractice')),
-      '</button>',
-    '</div>'
-  ].join('');
-}
-
-function buildPracticeHTML() {
-  var q = practiceQuestions[GameState.currentQuestion];
-  if (!q) return '<div style="padding:2rem;text-align:center">' + escapeText(I18n.t('bodmasPro')) + '</div>';
-
-  var label = I18n.t('bodmasPracticeOf', {
-    current: GameState.currentQuestion + 1,
-    total:   practiceQuestions.length
-  });
-
-  var optCards = q.options.map(function(opt, i) {
-    return [
-      '<button class="option-card" role="radio" aria-checked="false"',
-        ' data-index="' + i + '"',
-        ' aria-label="' + escapeText(I18n.t('bodmasHtpStep5').replace(/<[^>]+>/g, '')) + ': ' + opt + '">',
-        opt,
-      '</button>'
-    ].join('');
-  }).join('');
-
-  return [
-    '<div class="practice-screen">',
-      '<div class="practice-q-label">' + escapeText(label) + '</div>',
-      '<div class="practice-expression">' + escapeText(q.expression) + '</div>',
-      '<div class="options-grid" role="radiogroup" aria-label="' + escapeText(I18n.t('bodmasHtpStep5').replace(/<[^>]+>/g, '')) + '" id="options-grid">',
-        optCards,
-      '</div>',
-    '</div>'
-  ].join('');
-}
-
-function buildCompleteHTML() {
-  return '<div></div>';
-}
-
 /* ── Listener attachment ───────────────────────────── */
 function attachPracticeListeners() {
   var cards = qsa('.option-card');
@@ -257,7 +196,7 @@ function handleSubmit() {
   if (!GameState.canSubmit()) return;
   initAudio();
 
-  var correct = GameState.selectedAnswer === practiceQuestions[GameState.currentQuestion].correctIndex;
+  var correct = ContentValidators.isAnswerCorrect(GameState.currentQuestion, GameState.selectedAnswer);
 
   if (_selectedCardEl) {
     if (correct) {
@@ -317,27 +256,24 @@ function showInlineFeedback(isCorrect) {
   var gif     = qs('#feedback-char-gif');
   if (!overlay || !toast || !gif) return;
 
-  var q = practiceQuestions[GameState.currentQuestion];
   _feedbackIsCorrect = isCorrect;
 
   if (isCorrect) {
-    var rule = (q && q.id) ? I18n.t('bodmasRule_' + q.id) : (q && q.bodmasRule ? q.bodmasRule : 'Correct!');
     toast.className = 'feedback-toast';
-    toast.textContent = I18n.t('bodmasCorrectPrefix') + rule;
+    toast.textContent = ContentValidators.getFeedbackMessage(GameState.currentQuestion, true);
     gif.src = 'assets/GIFs/correct.gif';
     gif.alt = 'Correct';
     gif.className = 'feedback-char-gif feedback-char-gif--correct';
   } else {
-    var hint = (q && q.id) ? I18n.t('bodmasHint_' + q.id) : (q && q.hint ? q.hint : 'Try again!');
     toast.className = 'feedback-toast feedback-toast--wrong';
-    toast.textContent = I18n.t('bodmasHintPrefix') + hint;
+    toast.textContent = ContentValidators.getFeedbackMessage(GameState.currentQuestion, false);
     gif.src = 'assets/GIFs/incorrect.gif';
     gif.alt = 'Incorrect';
     gif.className = 'feedback-char-gif';
   }
   overlay.hidden = false;
 
-  var isLastQuestion = GameState.currentQuestion === practiceQuestions.length - 1;
+  var isLastQuestion = GameState.currentQuestion === ContentPages.getPracticeQuestionCount() - 1;
   if (isCorrect && isLastQuestion) launchConfetti();
 
   var delay = isCorrect ? 2500 : 2000;
@@ -369,111 +305,17 @@ function hideFeedback() {
   _feedbackIsCorrect = null;
 }
 
-function launchConfetti() {
-  var existing = document.querySelector('.celebration');
-  if (existing) existing.remove();
-
-  if (typeof window.matchMedia === 'function' && window.matchMedia('(orientation: portrait)').matches) {
-    return;
-  }
-
-  var el = document.createElement('div');
-  el.className = 'celebration';
-
-  var total    = 150;
-  var topCount = Math.floor(total * 0.35);
-
-  for (var i = 0; i < total; i++) {
-    var piece = document.createElement('div');
-    piece.className = 'confetti';
-    piece.style.left            = (Math.random() * 100) + 'vw';
-    piece.style.backgroundColor = 'hsl(' + Math.floor(Math.random() * 360) + ', 100%, 50%)';
-    piece.style.width           = (6 + Math.random() * 8) + 'px';
-    piece.style.height          = (6 + Math.random() * 8) + 'px';
-
-    if (i < topCount) {
-      piece.style.top                     = (Math.random() * 8) + '%';
-      piece.style.animationName           = 'confetti-stay';
-      piece.style.animationDuration       = (4 + Math.random() * 3) + 's';
-      piece.style.animationDelay          = (Math.random() * 2) + 's';
-      piece.style.animationTimingFunction = 'ease-out';
-      piece.style.animationFillMode       = 'forwards';
-    } else {
-      piece.style.animationDelay    = (Math.random() * 2) + 's';
-      piece.style.animationDuration = (2 + Math.random() * 2) + 's';
-    }
-    el.appendChild(piece);
-  }
-
-  document.body.appendChild(el);
-  setTimeout(function() { if (el.parentNode) el.remove(); }, 8000);
-}
-
 /* ── Explore sequence ──────────────────────────────── */
 async function startExploreSequence() {
   _exploreAbort = false;
-  var exprEl  = qs('#explore-expr');
-  var annoEl  = qs('#explore-anno');
-  var counter = qs('#explore-step-counter');
-
-  if (!exprEl || !annoEl) return;
-
-  var annoKeys = [
-    'bodmasExploreAnno1', 'bodmasExploreAnno2', 'bodmasExploreAnno3',
-    'bodmasExploreAnno4', 'bodmasExploreAnno5', 'bodmasExploreAnno6'
-  ];
-
-  for (var i = 0; i < exploreSteps.length; i++) {
-    if (_exploreAbort || GameState.currentScreen !== 'explore') return;
-
-    var step = exploreSteps[i];
-    var annoText = I18n.t(annoKeys[i] || 'bodmasExploreAnno1');
-    if (counter) counter.textContent = I18n.t('bodmasStepOf', { current: i + 1, total: exploreSteps.length });
-
-    exprEl.textContent = step.expression;
-    annoEl.style.opacity = '0';
-
-    if (step.highlightPart) {
-      var highlightAnim = animateExploreHighlight(exprEl, step.highlightPart);
-      if (highlightAnim && highlightAnim.finished) await highlightAnim.finished;
-    }
-
-    if (_exploreAbort || GameState.currentScreen !== 'explore') return;
-
-    annoEl.textContent = annoText;
-    animateExploreAnnotation(annoEl);
-
-    await wait(1000);
-    if (_exploreAbort || GameState.currentScreen !== 'explore') return;
-
-    if (step.resolvedExpression) {
-      var resolveAnim = animateExploreResolve(exprEl, step.resolvedExpression);
-      if (resolveAnim && resolveAnim.finished) await resolveAnim.finished;
-      await wait(700);
-      if (_exploreAbort || GameState.currentScreen !== 'explore') return;
-    }
-  }
-
-  if (_exploreAbort || GameState.currentScreen !== 'explore') return;
-
-  var startBtn = qs('#btn-start-practice');
-  if (startBtn) {
-    startBtn.classList.add('visible');
-    if (animeAvailable) {
-      anime({
-        targets: startBtn,
-        opacity: [0, 1],
-        translateY: [12, 0],
-        duration: 480,
-        easing: 'easeOutBack'
-      });
-    }
-    startBtn.addEventListener('click', function() {
+  await runExploreSequence({
+    isCancelled: function() {
+      return _exploreAbort || GameState.currentScreen !== 'explore';
+    },
+    onStartPractice: function() {
       transitionToScreen('practice');
-    });
-  }
-
-  if (counter) counter.textContent = I18n.t('bodmasReadyLabel');
+    }
+  });
 }
 
 /* ── Loading auto-advance ──────────────────────────── */
@@ -498,7 +340,7 @@ function renderProgressDots() {
 
   var mode = GameState.currentScreen;
   var isPractice = (mode === 'practice' || mode === 'correct' || mode === 'wrong');
-  var total = practiceQuestions.length;
+  var total = ContentPages.getPracticeQuestionCount();
   var current = GameState.currentQuestion;
 
   container.innerHTML = '';
@@ -532,14 +374,6 @@ function disableAllCards() {
     c.setAttribute('disabled', 'true');
     c.classList.add('option-card--submitted');
   });
-}
-
-function escapeText(str) {
-  if (!str) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;');
 }
 
 /* ── How to Play modal ── */
@@ -740,14 +574,13 @@ function openSummaryModal() {
   if (!modal) return;
 
   var score = GameState.score;
-  var total = score + GameState.wrongCount;
-  var pct   = total > 0 ? Math.round((score / total) * 100) : 0;
-  var earned = pct === 100 ? 3 : pct >= 80 ? 2 : pct >= 60 ? 1 : 0;
+  var summary = ContentValidators.getSummaryResult(score, GameState.wrongCount);
+  var pct = summary.accuracy;
+  var earned = summary.stars;
 
   var titleEl = qs('#summary-title');
   if (titleEl) {
-    var titleKey = earned === 3 ? 'bodmasPro' : earned === 2 ? 'bodmasWellDone' : earned === 1 ? 'bodmasKeepPracticing' : 'bodmasTryAgain';
-    titleEl.textContent = I18n.t(titleKey);
+    titleEl.textContent = I18n.t(summary.titleKey);
   }
 
   var starsEl = qs('#summary-stars');
@@ -783,7 +616,7 @@ function openSummaryModal() {
     window.parent.postMessage({
       type:      'GAME_COMPLETE',
       score:     score,
-      total:     practiceQuestions.length,
+      total:     ContentPages.getPracticeQuestionCount(),
       correct:   score,
       wrong:     GameState.wrongCount,
       accuracy:  pct,

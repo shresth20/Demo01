@@ -24,8 +24,7 @@ var GameState = {
   },
 
   recordAnswer: function() {
-    var q = practiceQuestions[this.currentQuestion];
-    if (this.selectedAnswer === q.correctIndex) {
+    if (ContentValidators.isAnswerCorrect(this.currentQuestion, this.selectedAnswer)) {
       this.score += 1;
     } else {
       this.wrongCount += 1;
@@ -37,7 +36,7 @@ var GameState = {
     this.currentQuestion += 1;
     this.selectedAnswer   = null;
     this.isSubmitted      = false;
-    if (this.currentQuestion >= practiceQuestions.length) {
+    if (this.currentQuestion >= ContentPages.getPracticeQuestionCount()) {
       this.currentScreen = 'complete';
     } else {
       this.currentScreen = 'practice';

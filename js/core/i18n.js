@@ -1,8 +1,12 @@
-/* i18n singleton — loads locales.json and merges BODMAS_LOCALES */
+/* i18n singleton - loads core and content locale JSON */
 var I18n = (function() {
   var _data   = null;
   var _lang   = 'en';
   var _LS_KEY = 'game_lang';
+
+  function _emptyCoreData() {
+    return { defaultLanguage: 'en', supportedLanguages: {}, languageLabels: {} };
+  }
 
   function _getUrlLang() {
     try {
@@ -43,45 +47,51 @@ var I18n = (function() {
     return _isSupportedLang(defaultLang) ? defaultLang : 'en';
   }
 
-  /* Load locales.json then merge BODMAS_LOCALES into each language section */
-  function load(callback) {
+  function _loadJson(path, fallback, callback) {
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'locales.json', true);
+    xhr.open('GET', path, true);
     xhr.onreadystatechange = function() {
       if (xhr.readyState !== 4) return;
       var ok = (xhr.status === 200 || xhr.status === 0);
       if (!ok) {
-        _data = { defaultLanguage: 'en', supportedLanguages: {}, languageLabels: {} };
-      } else {
-        try {
-          _data = JSON.parse(xhr.responseText);
-        } catch(e) {
-          _data = { defaultLanguage: 'en', supportedLanguages: {}, languageLabels: {} };
-        }
+        callback(fallback);
+        return;
       }
-      _mergeBodymasLocales();
-      var resolved = _resolveInitialLang(_data.defaultLanguage);
-      _lang = (_data[resolved]) ? resolved : (_data.defaultLanguage || 'en');
-      _setUrlLang(_lang);
-      callback(_lang);
+      try {
+        callback(JSON.parse(xhr.responseText));
+      } catch(e) {
+        callback(fallback);
+      }
     };
     try { xhr.send(); } catch(e) {
-      _data = { defaultLanguage: 'en', supportedLanguages: {}, languageLabels: {} };
-      _mergeBodymasLocales();
-      callback('en');
+      callback(fallback);
     }
   }
 
-  function _mergeBodymasLocales() {
-    if (typeof BODMAS_LOCALES === 'undefined') return;
-    Object.keys(BODMAS_LOCALES).forEach(function(lang) {
+  /* Load core locale metadata, then merge game/content strings. */
+  function load(callback) {
+    _loadJson('locales/core.json', _emptyCoreData(), function(coreData) {
+      _data = coreData || _emptyCoreData();
+      _loadJson('locales/content.json', {}, function(contentData) {
+        _mergeContentLocales(contentData || {});
+        var resolved = _resolveInitialLang(_data.defaultLanguage);
+        _lang = (_data[resolved]) ? resolved : (_data.defaultLanguage || 'en');
+        _setUrlLang(_lang);
+        callback(_lang);
+      });
+    });
+  }
+
+  function _mergeContentLocales(contentLocales) {
+    Object.keys(contentLocales).forEach(function(lang) {
       if (!_data[lang]) _data[lang] = {};
-      var src = BODMAS_LOCALES[lang];
+      var src = contentLocales[lang];
+      if (!src || typeof src !== 'object' || Array.isArray(src)) return;
       Object.keys(src).forEach(function(k) {
         _data[lang][k] = src[k];
       });
     });
-    /* Ensure supportedLanguages is populated from BODMAS_LOCALES if empty */
+    /* Ensure supportedLanguages is populated if the core locale file is empty. */
     if (!_data.supportedLanguages || Object.keys(_data.supportedLanguages).length === 0) {
       _data.supportedLanguages = { en: 'English', hi: 'हिन्दी', mr: 'मराठी', te: 'తెలుగు', gu: 'ગુજરાતી', od: 'ଓଡ଼ିଆ' };
     }

@@ -1,20 +1,92 @@
 # BODMAS Game - Developer Handover
 
-This handover explains the current project state for the next developer. It is based on the files in this repository, not on the older template assumptions that were present in previous documentation.
+This handover reflects the current repository structure. The project has been split into `core` and `content` folders for CSS and JavaScript, and localization now lives in `locales/core.json` plus `locales/content.json`.
 
 ---
 
 ## Project Overview
 
-This project is a static BODMAS math learning game. It teaches order of operations with a short Explore walkthrough, then asks six multiple-choice practice questions. The app is written in plain HTML, CSS, and JavaScript, with Anime.js vendored locally for animation support.
+This is a static, offline-friendly BODMAS math learning game. It teaches order of operations with a short Explore walkthrough, then asks six multiple-choice practice questions.
 
-The project is designed to run without a build system and without external network dependencies. It can be opened directly in a browser or served from any static web server.
+- Main entry point: `index.html`
+- Current topic: BODMAS order of operations
+- Runtime: browser only
+- Build system: none
+- Package manager: none
+- Runtime dependency: local `js/vendor/anime.min.js`
+- Supported language codes: `en`, `hi`, `mr`, `te`, `gu`, `od`
+- Completion integration: `window.parent.postMessage()` with `GAME_COMPLETE`
+- Temporary developer UI: frame switcher in the lower-right corner
+
+---
+
+## Current File and Folder Structure
+
+```text
+Demo01/
+|-- index.html                  Main browser entry point and static DOM shell
+|-- game.config.json            Empty placeholder for future game metadata
+|-- README.md                   Project overview and run notes
+|-- HANDOVER.md                 Developer handover and implementation notes
+|-- test-postmessage.html       Iframe harness for GAME_COMPLETE testing
+|-- docs/
+|   |-- architecture.md         Placeholder, currently empty
+|   |-- content-authoring.md    Placeholder, currently empty
+|   `-- new-game-checklist.md   Placeholder, currently empty
+|-- locales/
+|   |-- core.json               Locale metadata, shared labels, legacy strings
+|   `-- content.json            Active BODMAS game strings
+|-- css/
+|   |-- core/
+|   |   |-- style.css           Design tokens, shell, chrome, modals
+|   |   |-- animations.css      Shared keyframes and motion fallbacks
+|   |   |-- responsive.css      Shared responsive shell rules
+|   |   `-- frames.css          Temporary frame switcher layouts
+|   `-- content/
+|       |-- pages.css           BODMAS screen, feedback, summary styles
+|       `-- responsive.css      BODMAS-specific responsive rules
+|-- js/
+|   |-- vendor/
+|   |   `-- anime.min.js        Local Anime.js dependency
+|   |-- core/
+|   |   |-- utils.js            DOM and timing helpers
+|   |   |-- state.js            GameState singleton
+|   |   |-- i18n.js             Locale loading, merge, and persistence
+|   |   |-- animations.js       Shared screen transition helpers
+|   |   |-- audio.js            Sound effects and completion tone
+|   |   |-- frames.js           Temporary frame switcher
+|   |   |-- content-renderer.js Core-to-content render bridge
+|   |   |-- content-observer.js Placeholder, currently empty
+|   |   `-- app.js              Main game orchestrator
+|   `-- content/
+|       |-- pages.js            Explore steps, questions, screen markup
+|       |-- validators.js       Answer checking and summary scoring
+|       |-- animations.js       BODMAS explore, option, confetti animations
+|       `-- voiceovers.js       Placeholder, currently empty
+`-- assets/
+    |-- fonts/
+    |   |-- lilita_one/
+    |   `-- nunito/
+    |-- GIFs/
+    |   |-- loader.gif
+    |   |-- correct.gif
+    |   `-- incorrect.gif
+    |-- icons/                  Header icons, stars, operators, artwork SVGs
+    |-- images/                 Logo, calculator, and Swiftee character art
+    `-- sounds/                 Button, correct, wrong, and extra sound files
+```
+
+Notes:
+
+- `game.config.json` exists but is empty and is not read by the current code.
+- `docs/*.md`, `js/core/content-observer.js`, and `js/content/voiceovers.js` are placeholders right now.
+- The active runtime uses only the split paths shown above; older flat-path files from previous revisions should not be restored.
 
 ---
 
 ## HTML Layer System
 
-`index.html` is organized as a visual layer stack. The layer numbers are documented in the HTML comments and are controlled mostly by z-index tokens in `css/style.css`. The DOM order is useful for readability, but the actual visual priority comes from the CSS variables under `:root`.
+`index.html` is organized as a visual layer stack. The z-index values live in `css/core/style.css`.
 
 | Layer | Main HTML | Main CSS | Purpose |
 | --- | --- | --- | --- |
@@ -30,39 +102,92 @@ The project is designed to run without a build system and without external netwo
 
 Important layer behavior:
 
-- `#content-area` is the safe target for dynamic game screens. Avoid injecting screen content into the header, footer, modal layer, or decorative layer.
-- `#board-secondary` is a placeholder for dual-board frame layouts. It is hidden by default and becomes visible through `body.frame--3` or `body.frame--4` rules in `css/frames.css`.
-- The frame switcher is temporary developer UI. It is fixed near the lower-right corner at z-index `98`, just below the header/footer chrome at `99`.
-- Header and footer heights are CSS variables. Responsive overrides change `--header-h` and `--footer-h`, and the board automatically repositions around them.
-- Decorative assets are intentionally separate from game content. Responsive rules can hide or resize them without touching gameplay markup.
-- New overlays should be assigned deliberately in the z-index stack. Use the existing variables where possible instead of hard-coded values.
+- `#content-area` is the only safe target for injected screen content.
+- `#board-secondary` is hidden by default and is shown only by frame variants in `css/core/frames.css`.
+- The frame switcher is temporary developer UI and sits just below the header/footer z-index.
+- Header and footer heights are controlled with `--header-h` and `--footer-h`; the board positions itself between them.
 
 ---
 
-## Current Status
+## Stylesheet Load Order
 
-- Main entry point: `index.html`
-- Current topic: BODMAS order of operations
-- Current flow: Loading -> Explore -> Practice -> Summary
-- Practice length: 6 questions
-- Supported language codes: `en`, `hi`, `mr`, `te`, `gu`, `od`
-- Default language: `en`
-- Environment variables: none
-- Build system: none
-- Runtime dependencies: local browser files only
-- Automated tests: none
-- Completion integration: `window.parent.postMessage()` with `GAME_COMPLETE`
-- Temporary developer UI: visible frame switcher in the lower-right corner
+The order in `index.html` is:
 
-Recent git history indicates work around frame layouts, tablet responsiveness, phone view fixes, language dropdown/storage fixes, and postMessage completion support.
+```text
+1. css/core/style.css
+2. css/core/animations.css
+3. css/content/pages.css
+4. css/core/responsive.css
+5. css/content/responsive.css
+6. css/core/frames.css
+```
+
+Keep this order unless you intentionally refactor the cascade.
 
 ---
 
-## Game/UI Flow
+## Script Load Order
 
-1. `DOMContentLoaded` runs in `app.js`.
-2. `I18n.load()` loads `locales.json`, merges `BODMAS_LOCALES`, resolves language, and calls back.
-3. Static translations are applied.
+The project uses plain global scripts. There is no module loader, so order matters.
+
+```text
+1. js/vendor/anime.min.js
+2. js/core/utils.js
+3. js/content/pages.js
+4. js/content/validators.js
+5. js/core/state.js
+6. js/content/voiceovers.js
+7. js/core/animations.js
+8. js/content/animations.js
+9. js/core/audio.js
+10. js/core/i18n.js
+11. js/core/frames.js
+12. js/core/content-renderer.js
+13. js/core/content-observer.js
+14. js/core/app.js
+```
+
+Practical dependency notes:
+
+- `app.js` should remain last because it wires the app after all globals exist.
+- `content-renderer.js` expects `ContentPages` from `js/content/pages.js`.
+- `state.js` calls `ContentValidators` at runtime, so `validators.js` must be loaded before answer handling.
+- `content/animations.js` uses helpers from `core/animations.js`.
+- `i18n.js` loads `locales/core.json`, then `locales/content.json`.
+
+---
+
+## Core vs Content Split
+
+Core files are reusable game-shell behavior:
+
+- `js/core/app.js`: screen transitions, persistent controls, feedback, modals, completion messaging.
+- `js/core/state.js`: score, current question, selected answer, submit and animation guards.
+- `js/core/i18n.js`: locale JSON loading, content merge, URL/localStorage language persistence.
+- `js/core/audio.js`: click, correct, wrong, and completion sounds.
+- `js/core/frames.js`: temporary layout frame switcher.
+- `js/core/animations.js`: shared screen enter/exit animation helpers.
+- `js/core/content-renderer.js`: small bridge from core screen names to content builders.
+- `js/core/utils.js`: `qs`, `qsa`, `setClass`, `wait`, and escaping helpers.
+
+Content files are the current BODMAS lesson:
+
+- `js/content/pages.js`: Explore step data, practice question data, and markup builders.
+- `js/content/validators.js`: answer correctness, feedback messages, and summary scoring.
+- `js/content/animations.js`: Explore sequence, option-card animation, and confetti.
+- `locales/content.json`: BODMAS labels, walkthrough annotations, hints, rules, modal text.
+- `css/content/pages.css`: BODMAS-specific screen styling.
+- `css/content/responsive.css`: BODMAS-specific responsive adjustments.
+
+This split is the main place to work when turning the template into another activity: keep shell behavior in `core`, and place lesson-specific data, rendering, validation, animation, and copy in `content`.
+
+---
+
+## Game Flow
+
+1. `DOMContentLoaded` runs in `js/core/app.js`.
+2. `I18n.load()` loads `locales/core.json`, then `locales/content.json`.
+3. Static DOM translations are applied.
 4. Progress dots and persistent listeners are attached.
 5. The app transitions to `loading`.
 6. The loader overlay remains for about 2.2 seconds.
@@ -71,122 +196,60 @@ Recent git history indicates work around frame layouts, tablet responsiveness, p
 9. Explore mode plays six walkthrough steps.
 10. `Start Practice` appears after Explore completes.
 11. Practice renders one question at a time.
-12. The user selects an option, then clicks Submit.
-13. Correct answers advance after feedback; wrong answers retry after feedback.
-14. After the final correct answer, the Summary modal opens.
+12. The learner selects an option, then clicks Submit.
+13. Correct answers advance after feedback; wrong answers retry the same question.
+14. After all six questions are answered correctly, the Summary modal opens.
 15. The Summary modal sends `GAME_COMPLETE` to `window.parent`.
 16. `Play Again` resets `GameState` and returns to loading.
 
 ---
 
-## Code Base Structure Explanation
-
-The project is intentionally small and flat. There is no package manager, bundler, module loader, or transpiler. Browser files load directly from `index.html`, so file names and relative paths matter.
-
-```text
-.
-|-- index.html                 Main HTML shell and layer stack
-|-- HANDOVER.md                Developer handover notes
-|-- README.md                  Project readme
-|-- locales.json               Locale metadata and shared translations
-|-- test-postmessage.html      Parent iframe harness for completion testing
-|-- css/
-|   |-- style.css              Base tokens, layout, screens, modals, feedback
-|   |-- responsive.css         Viewport and orientation overrides
-|   |-- animations.css         Keyframes and reduced-motion fallbacks
-|   `-- frames.css             Temporary frame layout variants
-|-- js/
-|   |-- vendor/anime.min.js    Local Anime.js dependency
-|   |-- utils.js               Small DOM and timing helpers
-|   |-- state.js               Shared GameState object
-|   |-- activities.js          Explore steps and practice question data
-|   |-- animations.js          Animation helpers around Anime.js/CSS fallbacks
-|   |-- audio.js               Sound preload and playback helpers
-|   |-- bodmas-locales.js      Active BODMAS translation strings
-|   |-- i18n.js                Locale loading, merging, storage, and lookup
-|   |-- frames.js              Developer frame switcher and body classes
-|   `-- app.js                 Main controller and event wiring
-|-- assets/
-|   |-- fonts/                 Local Lilita One and Nunito font files
-|   |-- GIFs/                  Loader, correct, and incorrect feedback GIFs
-|   |-- icons/                 Header icons, stars, and decorative math SVGs
-|   |-- images/                Logo, calculator, and character artwork
-|   `-- sounds/                Button, correct, and wrong-answer audio
-|-- .claude/                   Local assistant/developer notes
-|-- .vscode/                   Editor settings
-`-- .gitignore
-```
-
-How the pieces fit together:
-
-- `index.html` owns the stable shell: header, footer, board containers, modals, overlays, decorative layer, and script tags.
-- `css/style.css` is the base visual system. It defines tokens, z-index layers, fixed chrome, board layout, modal styling, feedback styling, and core screen styles.
-- `css/responsive.css` overrides the base layout for tablets, laptops, compact landscape phones, portrait orientation, foldables, and short-height screens.
-- `css/frames.css` is isolated from the main layout because the frame switcher is temporary and experimental.
-- `js/app.js` is the coordinator. It waits for localization, renders the current screen into `#content-area`, attaches events, handles answers, updates progress, opens modals, and sends completion messages.
-- `js/activities.js`, `js/bodmas-locales.js`, and `locales.json` are the main content files for changing the lesson topic, questions, or language text.
-- `assets/` is part of runtime behavior, not just decoration. The app expects local fonts, sounds, GIFs, icons, and images to be present at the current paths.
-
-The app uses plain global scripts. Load order is important because later files read globals from earlier files.
-
-Current script order in `index.html`:
-
-```text
-1. js/vendor/anime.min.js
-2. js/utils.js
-3. js/state.js
-4. js/activities.js
-5. js/animations.js
-6. js/audio.js
-7. js/bodmas-locales.js
-8. js/i18n.js
-9. js/frames.js
-10. js/app.js
-```
-
-Do not reorder these scripts unless you also refactor the dependencies.
-
----
-
-## Important Files and Their Purpose
+## Important Files
 
 | File | Purpose |
 | --- | --- |
-| `index.html` | Main shell for header, board containers, footer, modals, loader, feedback overlay, decorative layer, frame switcher, and script tags. |
-| `test-postmessage.html` | Parent-page harness that iframes `index.html` and logs `GAME_COMPLETE`. |
-| `locales.json` | Locale configuration, supported language names, shared labels, and legacy place-value content. |
-| `js/app.js` | Primary controller for rendering screens, attaching events, handling answers, feedback, modals, progress, summary, fullscreen, and postMessage. |
-| `js/state.js` | `GameState` singleton with current screen, question index, score, wrong count, selected answer, submit state, and animation guard. |
-| `js/activities.js` | BODMAS walkthrough data and six practice questions. |
-| `js/bodmas-locales.js` | Active BODMAS strings in all six language codes. |
-| `js/i18n.js` | Loads locale JSON, merges BODMAS strings, resolves and stores language, returns translations. |
-| `js/animations.js` | Anime.js wrappers plus fallbacks for screen transitions, explore highlight/resolve, and answer card animations. |
-| `js/audio.js` | Preloads click/correct/wrong sounds and creates completion tones through Web Audio. |
-| `js/frames.js` | Builds the temporary frame switcher and applies `body.frame--N` classes. |
-| `js/utils.js` | Small helpers: `qs`, `qsa`, `setClass`, and `wait`. |
-| `css/style.css` | Main design tokens, global layout, header/footer, board, screens, feedback, modals, summary, and asset sizing. |
-| `css/responsive.css` | Responsive overrides for tablets, laptops, phone landscape, portrait, foldables, and compact heights. |
-| `css/animations.css` | CSS keyframes and reduced-motion fallback rules. |
-| `css/frames.css` | Frame-specific board layout rules and frame switcher styling. |
+| `index.html` | Stable DOM shell, layer order, static modals, board containers, and script/style load order. |
+| `game.config.json` | Empty placeholder; not read by the current runtime. |
+| `test-postmessage.html` | Parent-page iframe harness for verifying `GAME_COMPLETE`. |
+| `locales/core.json` | Default language, supported language names, shared labels, and legacy place-value strings. |
+| `locales/content.json` | Active BODMAS UI text, walkthrough annotations, hints, and rules. |
+| `js/core/app.js` | Main controller for rendering, transitions, controls, modals, feedback, summary, fullscreen, and postMessage. |
+| `js/core/state.js` | `GameState` singleton for current screen, current question, score, wrong count, selected answer, and guards. |
+| `js/core/i18n.js` | Loads and merges locale data, resolves language, updates URL and localStorage. |
+| `js/core/audio.js` | Preloads and plays button, correct, wrong, and completion audio. |
+| `js/core/frames.js` | Builds the temporary frame switcher and applies `body.frame--N` classes. |
+| `js/core/animations.js` | Shared Anime.js wrappers and no-op fallbacks for screen transitions. |
+| `js/core/content-renderer.js` | Delegates core screen names to `ContentPages.buildScreen()`. |
+| `js/core/content-observer.js` | Reserved placeholder; currently empty. |
+| `js/content/pages.js` | BODMAS Explore steps, six practice questions, and screen HTML builders. |
+| `js/content/validators.js` | Answer checking, localized feedback lookup, and summary star/accuracy calculation. |
+| `js/content/animations.js` | Explore sequencing, option-card animations, and final confetti. |
+| `js/content/voiceovers.js` | Reserved placeholder; currently empty. |
+| `css/core/style.css` | Design tokens, fixed shell, board, header/footer, loader, modals, language picker, and shared layout. |
+| `css/core/animations.css` | Shared keyframes and reduced-motion behavior. |
+| `css/core/responsive.css` | Shared responsive shell, board, chrome, modal, and decoration rules. |
+| `css/core/frames.css` | Temporary frame layout variants and frame switcher styling. |
+| `css/content/pages.css` | BODMAS loading, explore, practice, feedback, How to Play, and summary styles. |
+| `css/content/responsive.css` | Content-specific responsive rules for compact, phone, and tablet layouts. |
 
 ---
 
-## Core Logic Explanation
+## Core Logic
 
 `GameState` tracks:
 
 - `currentScreen`: `loading`, `explore`, `practice`, or `complete`
-- `currentQuestion`: zero-based question index
+- `currentQuestion`: zero-based practice question index
 - `score`: number of correct submissions
 - `wrongCount`: number of wrong submissions
 - `selectedAnswer`: selected option index or `null`
-- `isSubmitted`: blocks repeated submits for the same attempt
+- `isSubmitted`: blocks repeated submits for one attempt
 - `isAnimating`: blocks overlapping screen transitions
 
 Answer handling:
 
 - `handleOptionSelect(index)` stores the selected option and enables Submit.
-- `handleSubmit()` checks the selected option against `correctIndex`, records the attempt, disables option cards, and shows feedback.
+- `handleSubmit()` checks the option through `ContentValidators.isAnswerCorrect()`.
 - `GameState.recordAnswer()` increments `score` or `wrongCount`.
 - Correct feedback waits about 2.5 seconds, then advances.
 - Wrong feedback waits about 2 seconds, then rerenders the same question.
@@ -194,109 +257,101 @@ Answer handling:
 
 Scoring:
 
-- Summary accuracy uses attempts, not only question count.
+- Accuracy is based on attempts, not just question count.
 - Formula: `score / (score + wrongCount)`.
-- A learner can answer all six questions correctly eventually but still lose accuracy if they had wrong attempts first.
+- Stars are calculated in `ContentValidators.getSummaryResult()`.
 
-Important implementation detail:
+Question ID rule:
 
-- Practice question IDs such as `q1` must match localization keys such as `bodmasRule_q1` and `bodmasHint_q1`.
-- Because `I18n.t()` returns the key when missing, missing rule/hint keys can display literal key names.
-
----
-
-## Responsive Design Implementation
-
-The responsive system is CSS-driven.
-
-- `:root` in `style.css` defines colors, fonts, spacing, touch sizes, header/footer heights, z-index values, and timing.
-- The board container is fixed between the header and footer using `top: var(--header-h)` and `bottom: var(--footer-h)`.
-- `responsive.css` adjusts:
-  - `min-width: 768px`
-  - `min-width: 1024px`
-  - `min-width: 1280px`
-  - `min-width: 1440px`
-  - `max-aspect-ratio: 4/3`
-  - `min-aspect-ratio: 16/10`
-  - compact tablet target around `1024px x 600px`
-  - landscape screens under `520px` tall
-  - portrait orientation
-  - narrow landscape under `480px`
-  - phones in landscape under `900px`
-  - compact phones under `812px` wide and `375px` tall
-  - foldables between `800px` and `1023px`
-- Portrait currently adapts content and hides large decorations; it does not block the UI.
-- `animations.css` contains a `prefers-reduced-motion` rule for the wrong-card shake fallback.
+- IDs like `q1` must match localization keys like `bodmasRule_q1` and `bodmasHint_q1`.
+- Missing translation keys fall back to visible key text, so keep those aligned.
 
 ---
 
-## Popup/Modal Behavior
+## Localization
+
+Localization is handled by `js/core/i18n.js`.
+
+Load process:
+
+1. XHR loads `locales/core.json`.
+2. XHR loads `locales/content.json`.
+3. Content strings are merged into each language object from the core locale data.
+4. Initial language is resolved from URL `?lang=`, then `localStorage.game_lang`, then `defaultLanguage`.
+5. The URL is updated with the resolved language.
+6. Static DOM text and the current screen render with the selected language.
+
+Current language codes:
+
+- `en` - English
+- `hi` - Hindi
+- `mr` - Marathi
+- `te` - Telugu
+- `gu` - Gujarati
+- `od` - Odia
+
+Notes:
+
+- Add or remove language codes in `locales/core.json` under `supportedLanguages`.
+- Add matching complete language objects in `locales/content.json`.
+- `languageLabels` exists in `locales/core.json`, but the current dropdown reads `supportedLanguages`.
+- `locales/core.json` still contains legacy place-value strings that are not rendered by the current BODMAS flow.
+- `bodmasRotateMsg` exists in content translations, but no active rotate-blocking overlay is currently present.
+
+---
+
+## Responsive Implementation
+
+Responsive behavior is split by ownership:
+
+- `css/core/style.css`: root variables, shell, board, chrome, loader, modal, language picker, and shared components.
+- `css/core/responsive.css`: shared layout and chrome rules for tablets, laptops, phones, portrait, foldables, and short screens.
+- `css/content/pages.css`: BODMAS-specific screens, feedback, How to Play content, and summary.
+- `css/content/responsive.css`: content-specific compaction and phone/tablet adjustments.
+- `css/core/frames.css`: frame switcher layouts for `frame--1` through `frame--4`.
+
+Important behavior:
+
+- The board is fixed between `--header-h` and `--footer-h`.
+- Portrait layouts adapt content and hide large decorations; they do not block the UI.
+- `assets/GIFs/` casing matters because the code references it exactly.
+
+---
+
+## Modal and Overlay Behavior
 
 How to Play modal:
 
 - Opens automatically once after the first loading sequence.
 - Opens from the Info header button.
-- Closes with the close button, Escape key, or backdrop click.
-- Focus returns to the Info button after closing.
+- Closes from the close button, Escape key, or backdrop click.
+- Returns focus to the Info button after closing.
 
 Language modal:
 
 - Opens from the language header button.
-- Shows a dropdown populated from `I18n.getSupportedLanguages()`.
+- Dropdown is populated from `I18n.getSupportedLanguages()`.
 - Apply is disabled until the selected language changes.
-- On Apply, `I18n.setLang()` writes the language to the URL, document language, and `localStorage`.
-- A confirmation view shows for about 1.8 seconds.
-- The modal closes, static text is reapplied, and the current screen rerenders.
+- Applying a language updates URL, document language, and `localStorage`.
+- The current screen rerenders after the confirmation view.
 - If the current screen is Explore, the Explore sequence restarts.
 
 Summary modal:
 
 - Opens when the game completes.
-- Displays localized title, three star icons, accuracy, and Play Again.
+- Displays localized title, three stars, accuracy, and Play Again.
 - Sends `GAME_COMPLETE` to `window.parent`.
-- Does not currently close from Escape or backdrop click; Play Again is the normal exit path.
-
-Loader overlay:
-
-- Visible during initial loading.
-- Hidden by adding `loader--hidden` after the loading delay.
+- Play Again is the normal exit path.
 
 Feedback overlay:
 
 - Uses `#feedback-overlay`, `#feedback-toast`, and `#feedback-char-gif`.
-- Appears above the board and footer area.
 - Correct feedback uses `assets/GIFs/correct.gif`.
 - Wrong feedback uses `assets/GIFs/incorrect.gif`.
 
 ---
 
-## Header/Footer Behavior
-
-Header:
-
-- Fixed at the top.
-- Contains progress dots on the left.
-- Contains reset, info, language, and fullscreen buttons on the right.
-- Fullscreen button swaps between fullscreen and exit-fullscreen icons.
-
-Footer:
-
-- Fixed at the bottom.
-- Contains the Submit button.
-- Submit is disabled until an answer is selected and the app is not already submitted/animating.
-- Submit remains visible outside practice, but disabled.
-
-Reset behavior:
-
-- `handleReset()` currently returns unless `GameState.currentScreen === 'practice'`.
-- During practice, it clears selection and rerenders the current question.
-- If reset is clicked while feedback is active, it rolls back the most recent correct/wrong count before rerendering.
-
----
-
-## Assets and Design Elements
-
-Assets are all local.
+## Assets
 
 Fonts:
 
@@ -316,12 +371,7 @@ Images:
 - `assets/images/Calculator.png`
 - `assets/images/Swiftee-left.png`
 - `assets/images/Swiftee-right.png`
-- `assets/images/Swiftee01.png` through `Swiftee06.png`
-
-Icons:
-
-- Header/action icons for reset, info, language, fullscreen, exit fullscreen, close, and stars.
-- Decorative math/operator SVGs and topic artwork in `assets/icons/`.
+- `assets/images/Swiftee01.png` through `assets/images/Swiftee06.png`
 
 Sounds:
 
@@ -330,45 +380,15 @@ Sounds:
 
 ---
 
-## Language/Localization Handling
-
-`js/i18n.js` controls language behavior.
-
-Load process:
-
-1. XHR loads `locales.json`.
-2. `BODMAS_LOCALES` from `js/bodmas-locales.js` is merged into the loaded data.
-3. The initial language is resolved from `?lang=`, then `localStorage.game_lang`, then `defaultLanguage`.
-4. The URL is updated with the resolved language.
-5. Static translations and screen content render.
-
-Current language codes:
-
-- `en` - English
-- `hi` - Hindi
-- `mr` - Marathi
-- `te` - Telugu
-- `gu` - Gujarati
-- `od` - Odia
-
-Notes:
-
-- `locales.json` contains a large set of legacy place-value strings that are not used by the current BODMAS screens.
-- `languageLabels` exists in `locales.json`, but the current dropdown uses `supportedLanguages` directly.
-- `bodmasRotateMsg` is translated but not currently rendered by the app.
-- Add new BODMAS languages by updating `supportedLanguages` and adding a matching complete object in `BODMAS_LOCALES`.
-
----
-
 ## Completion postMessage
 
-When the Summary modal opens, `app.js` sends:
+When the Summary modal opens, `js/core/app.js` sends:
 
 ```javascript
 window.parent.postMessage({
   type: 'GAME_COMPLETE',
   score: score,
-  total: practiceQuestions.length,
+  total: ContentPages.getPracticeQuestionCount(),
   correct: score,
   wrong: GameState.wrongCount,
   accuracy: pct,
@@ -380,29 +400,18 @@ Use `test-postmessage.html` to verify this behavior. It loads `index.html` in an
 
 ---
 
-## Known Issues
+## Known Issues and Limitations
 
-- No automated tests are included.
-- No package manifest or build tooling is included.
+- No automated test suite is included.
+- No build pipeline or package manifest is included.
+- `game.config.json` is empty and unused.
+- `docs/*.md`, `js/core/content-observer.js`, and `js/content/voiceovers.js` are placeholders.
 - The frame switcher is temporary but currently visible.
-- `locales.json` contains unused legacy content from a place-value activity.
+- `locales/core.json` contains unused legacy place-value strings.
 - `bodmasRotateMsg` exists, but no rotate overlay is present in `index.html`.
 - The reset button only affects the practice screen.
-- `jump.mp3` and `sound_trash.mp3` are present but unused.
 - Missing BODMAS localization keys can display literal key strings.
-- Direct file opening depends on browser behavior for local XHR; use a static server if `locales.json` fails to load.
-
----
-
-## Pending Work
-
-- Decide whether to keep, hide, or remove the temporary frame switcher.
-- Decide whether the dual-board placeholder should become real functionality or remain a layout test.
-- Add a rotate overlay if landscape-only behavior is still required.
-- Add smoke tests for loading, Explore, practice, summary, localization, and postMessage.
-- Review and clean legacy locale strings after confirming they are not needed elsewhere.
-- Consider adding a small developer-only flag for frame/layout testing.
-- Document the final deployment target once known.
+- Direct file opening depends on browser behavior for local XHR; use a static server if locale files fail to load.
 
 ---
 
@@ -410,22 +419,21 @@ Use `test-postmessage.html` to verify this behavior. It loads `index.html` in an
 
 - Do not change script order in `index.html` without refactoring dependencies.
 - Do not rename `assets/GIFs/`; the app references that exact casing.
-- Do not remove `locales.json`; `i18n.js` loads it before merging BODMAS strings.
-- Do not remove `js/bodmas-locales.js`; it contains the active BODMAS UI text.
+- Do not remove `locales/core.json` or `locales/content.json`; `i18n.js` loads both.
 - Keep question IDs aligned with `bodmasRule_*` and `bodmasHint_*` keys.
-- Keep `correctIndex` zero-based and valid for the `options` array.
+- Keep `correctIndex` zero-based and valid for the question `options` array.
 - Preserve `GameState.isAnimating` checks to avoid overlapping transitions.
 - Preserve `_exploreAbort` behavior when rerendering or changing language.
 - Keep all runtime assets local unless offline support is no longer required.
-- Treat `test-postmessage.html` as part of the integration verification flow.
+- Treat `test-postmessage.html` as part of integration verification.
 
 ---
 
-## Testing Checklist
+## Manual Testing Checklist
 
-Manual smoke test:
+Core flow:
 
-- Open `index.html` with no console errors.
+- Open `index.html` or serve the folder locally.
 - Confirm the loader appears, then hides after about 2.2 seconds.
 - Confirm How to Play opens once after the first load.
 - Close How to Play by close button, backdrop, and Escape.
@@ -435,7 +443,6 @@ Manual smoke test:
 - Submit a wrong answer and verify hint, wrong sound, GIF, retry, and wrong count behavior.
 - Submit a correct answer and verify rule feedback, correct sound, GIF, progress dot, and advance.
 - Complete all six questions and verify Summary title, stars, accuracy, and Play Again.
-- Verify last correct answer can trigger confetti in landscape.
 - Verify Play Again resets to loading.
 
 Localization:
@@ -444,13 +451,13 @@ Localization:
 - Confirm URL `?lang=` updates.
 - Confirm `localStorage.game_lang` persists the choice.
 - Confirm current screen rerenders after language change.
-- Confirm Explore restarts cleanly if language is changed during Explore.
+- Confirm Explore restarts cleanly if language changes during Explore.
 
-Layout and responsive:
+Layout:
 
 - Test default desktop/laptop viewport.
 - Test tablet landscape around `1024 x 600`.
-- Test large tablet/laptop widths above `1280px` and `1440px`.
+- Test large widths above `1280px` and `1440px`.
 - Test phone landscape under `900px` wide.
 - Test compact phone landscape under `812px` wide and `375px` tall.
 - Test portrait orientation and confirm content remains usable.
@@ -462,20 +469,12 @@ Integration:
 - Complete the game inside the iframe.
 - Confirm the parent page logs `GAME_COMPLETE` with `correct`, `wrong`, `accuracy`, and `stars`.
 
-Accessibility and browser APIs:
-
-- Confirm progress dots update ARIA values.
-- Confirm option cards update `aria-checked`.
-- Confirm fullscreen button toggles icon, title, and aria-label.
-- Confirm button click sound does not throw autoplay errors.
-
 ---
 
 ## Recommended Next Steps
 
-1. Decide the production status of the frame switcher.
-2. Add a small automated browser smoke test for the core flow.
-3. Clean the localization files or document why legacy place-value keys remain.
-4. Add or remove portrait blocking intentionally, instead of leaving only an unused translation key.
-5. Verify the app on the real target devices and hosting environment.
-6. If this is reused as a template, document the exact content files that should be edited for a new topic.
+1. Decide whether to keep, hide, or remove the temporary frame switcher.
+2. Fill or remove the placeholder docs, depending on whether this repo will become a reusable template.
+3. Decide whether `game.config.json`, `content-observer.js`, and `voiceovers.js` should become real extension points.
+4. Add smoke tests for loading, Explore, practice, summary, localization, and postMessage.
+5. Clean legacy locale strings after confirming they are not needed by downstream templates.

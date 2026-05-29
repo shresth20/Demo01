@@ -6,10 +6,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Math Learning Game</title>
   <link rel="icon" type="image/png" href="assets\images\logo.png">
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="stylesheet" href="css/animations.css">
-  <link rel="stylesheet" href="css/responsive.css">
-  <link rel="stylesheet" href="css/frames.css">
+  <link rel="stylesheet" href="css/core/style.css">
+  <link rel="stylesheet" href="css/core/animations.css">
+  <link rel="stylesheet" href="css/content/pages.css">
+  <link rel="stylesheet" href="css/core/responsive.css">
+  <link rel="stylesheet" href="css/content/responsive.css">
+  <link rel="stylesheet" href="css/core/frames.css">
 </head>
 
 <body>
@@ -216,7 +218,7 @@
     </div>
   </div>
 
-  <!-- ═══ Frame switcher (temporary — remove div + css/frames.css to hide) ═══ -->
+  <!-- ═══ Frame switcher (temporary — remove div + css/core/frames.css to hide) ═══ -->
   <div id="frame-switcher" class="frame-switcher" role="toolbar" aria-label="Switch frame layout">
     <!-- Buttons injected by frames.js -->
   </div>
@@ -225,15 +227,19 @@
   <script src="js/vendor/anime.min.js"></script>
 
   <!-- App modules — load order matters -->
-  <script src="js/utils.js"></script>
-  <script src="js/state.js"></script>
-  <script src="js/activities.js"></script>
-  <script src="js/animations.js"></script>
-  <script src="js/audio.js"></script>
-  <script src="js/bodmas-locales.js"></script>
-  <script src="js/i18n.js"></script>
-  <script src="js/frames.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/core/utils.js"></script>
+  <script src="js/content/pages.js"></script>
+  <script src="js/content/validators.js"></script>
+  <script src="js/core/state.js"></script>
+  <script src="js/content/voiceovers.js"></script>
+  <script src="js/core/animations.js"></script>
+  <script src="js/content/animations.js"></script>
+  <script src="js/core/audio.js"></script>
+  <script src="js/core/i18n.js"></script>
+  <script src="js/core/frames.js"></script>
+  <script src="js/core/content-renderer.js"></script>
+  <script src="js/core/content-observer.js"></script>
+  <script src="js/core/app.js"></script>
 </body>
 
 </html>

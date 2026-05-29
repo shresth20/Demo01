@@ -20,3 +20,11 @@ function setClass(el, classMap) {
 function wait(ms) {
   return new Promise(function(resolve) { setTimeout(resolve, ms); });
 }
+
+function escapeText(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
