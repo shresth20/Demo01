@@ -35,38 +35,85 @@ There are no npm dependencies, no bundler, and no framework.
 
 ---
 
-## Project Structure
+## Current File and Folder Structure
 
 ```text
 Demo01/
-|-- index.html
-|-- test-postmessage.html
-|-- locales.json
-|-- README.md
-|-- HANDOVER.md
+|-- index.html                  Main browser entry point and static DOM shell
+|-- game.config.json            Empty placeholder for future game metadata
+|-- README.md                   Project overview and run notes
+|-- HANDOVER.md                 Developer handover and implementation notes
+|-- test-postmessage.html       Iframe harness for GAME_COMPLETE testing
+|-- docs/
+|   |-- architecture.md         Placeholder, currently empty
+|   |-- content-authoring.md    Placeholder, currently empty
+|   `-- new-game-checklist.md   Placeholder, currently empty
+|-- locales/
+|   |-- core.json               Locale metadata, shared labels, legacy strings
+|   `-- content.json            Active BODMAS game strings
 |-- css/
-|   |-- style.css
-|   |-- animations.css
-|   |-- responsive.css
-|   `-- frames.css
+|   |-- core/
+|   |   |-- style.css           Design tokens, shell, chrome, modals
+|   |   |-- animations.css      Shared keyframes and motion fallbacks
+|   |   |-- responsive.css      Shared responsive shell rules
+|   |   `-- frames.css          Temporary frame switcher layouts
+|   `-- content/
+|       |-- pages.css           BODMAS screen, feedback, summary styles
+|       `-- responsive.css      BODMAS-specific responsive rules
 |-- js/
+|   |-- core/
+|   |   |-- utils.js            DOM and timing helpers
+|   |   |-- state.js            GameState singleton
+|   |   |-- i18n.js             Locale loading, merge, and persistence
+|   |   |-- animations.js       Shared screen transition helpers
+|   |   |-- audio.js            Sound effects and completion tone
+|   |   |-- frames.js           Temporary frame switcher
+|   |   |-- content-renderer.js Core-to-content render bridge
+|   |   |-- content-observer.js Placeholder, currently empty
+|   |   `-- app.js              Main game orchestrator
+|   |-- content/
+|   |   |-- pages.js            Explore steps, questions, screen markup
+|   |   |-- validators.js       Answer checking and summary scoring
+|   |   |-- animations.js       BODMAS explore, option, confetti animations
+|   |   `-- voiceovers.js       Placeholder, currently empty
 |   |-- vendor/
 |   |   `-- anime.min.js
-|   |-- utils.js
-|   |-- state.js
-|   |-- activities.js
-|   |-- animations.js
-|   |-- audio.js
-|   |-- bodmas-locales.js
-|   |-- i18n.js
-|   |-- frames.js
-|   `-- app.js
 `-- assets/
     |-- fonts/
     |-- GIFs/
     |-- icons/
     |-- images/
     `-- sounds/
+```
+
+Stylesheet load order in `index.html`:
+
+```text
+1. css/core/style.css
+2. css/core/animations.css
+3. css/content/pages.css
+4. css/core/responsive.css
+5. css/content/responsive.css
+6. css/core/frames.css
+```
+
+Script load order in `index.html`:
+
+```text
+1. js/vendor/anime.min.js
+2. js/core/utils.js
+3. js/content/pages.js
+4. js/content/validators.js
+5. js/core/state.js
+6. js/content/voiceovers.js
+7. js/core/animations.js
+8. js/content/animations.js
+9. js/core/audio.js
+10. js/core/i18n.js
+11. js/core/frames.js
+12. js/core/content-renderer.js
+13. js/core/content-observer.js
+14. js/core/app.js
 ```
 
 ---
@@ -76,7 +123,7 @@ Demo01/
 No package installation is required.
 
 1. Download or clone the project.
-2. Keep the folder structure intact, especially `assets/`, `css/`, `js/`, and `locales.json`.
+2. Keep the folder structure intact, especially `assets/`, `css/`, `js/`, and `locales/`.
 3. Open `index.html` in a modern browser, or serve the folder with any static file server.
 
 ---
@@ -101,7 +148,7 @@ Then open:
 http://localhost:8000/
 ```
 
-A static server is useful if a browser blocks local XHR access to `locales.json`.
+A static server is useful if a browser blocks local XHR access to `locales/core.json` and `locales/content.json`.
 
 ---
 
@@ -132,7 +179,8 @@ No environment variables are used by the current project.
 There is no build step. For deployment, copy the static files to any static hosting environment:
 
 - `index.html`
-- `locales.json`
+- `game.config.json`
+- `locales/`
 - `css/`
 - `js/`
 - `assets/`
@@ -159,11 +207,12 @@ The bottom-right frame switcher is a temporary developer UI for testing board la
 
 ## Responsive Design Notes
 
-Responsive behavior is split across `css/style.css`, `css/responsive.css`, and `css/frames.css`.
+Responsive behavior is split across `css/core/style.css`, `css/core/responsive.css`, `css/content/responsive.css`, and `css/core/frames.css`.
 
-- `style.css` defines global tokens, fixed header/footer chrome, board layout, modals, feedback, and base screen styles.
-- `responsive.css` adjusts tablets, laptops, high-resolution displays, compact landscape phones, foldables, portrait layouts, and small-height viewports.
-- `frames.css` defines four body frame classes: `frame--1`, `frame--2`, `frame--3`, and `frame--4`.
+- `css/core/style.css` defines global tokens, fixed header/footer chrome, board layout, shared modals, loader overlay, and base shell styles.
+- `css/core/responsive.css` adjusts shared layout, chrome, modal shell, and decorative assets across tablets, laptops, phones, and foldables.
+- `css/content/pages.css` and `css/content/responsive.css` define BODMAS loading, explore, practice, feedback, How to Play content, and summary styling.
+- `css/core/frames.css` defines four body frame classes: `frame--1`, `frame--2`, `frame--3`, and `frame--4`.
 - Font sizes, spacing, icon sizes, header height, and footer height use CSS variables and `clamp()`.
 - The board sits between the fixed header and footer using `--header-h` and `--footer-h`.
 - Portrait layouts are responsive, but there is no active rotate-blocking overlay in the current `index.html`.
@@ -172,15 +221,15 @@ Responsive behavior is split across `css/style.css`, `css/responsive.css`, and `
 
 ## Language and Localization Notes
 
-Localization is handled by `js/i18n.js`, `locales.json`, and `js/bodmas-locales.js`.
+Localization is handled by `js/core/i18n.js`, `locales/core.json`, and `locales/content.json`.
 
-- `locales.json` defines `defaultLanguage`, `supportedLanguages`, shared labels, and a large set of legacy place-value strings.
-- `js/bodmas-locales.js` defines the active BODMAS-specific strings.
-- At runtime, `i18n.js` loads `locales.json` and merges `BODMAS_LOCALES` into each language.
+- `locales/core.json` defines `defaultLanguage`, `supportedLanguages`, shared labels, and a large set of legacy place-value strings.
+- `locales/content.json` defines the active BODMAS-specific strings.
+- At runtime, `i18n.js` loads both JSON files and merges content strings into each language.
 - Initial language resolution order is URL `?lang=`, then `localStorage` key `game_lang`, then `defaultLanguage`.
 - The current supported language codes are `en`, `hi`, `mr`, `te`, `gu`, and `od`.
 
-When adding or changing a language, update both `supportedLanguages` in `locales.json` and the matching language object in `js/bodmas-locales.js`.
+When adding or changing a language, update both `supportedLanguages` in `locales/core.json` and the matching language object in `locales/content.json`.
 
 ---
 
@@ -189,16 +238,26 @@ When adding or changing a language, update both `supportedLanguages` in `locales
 | File | Purpose |
 | --- | --- |
 | `index.html` | Main DOM shell, header/footer, modals, board containers, script order, and frame switcher host. |
-| `js/app.js` | Main game orchestrator for rendering screens, events, feedback, modals, summary, and completion messaging. |
-| `js/state.js` | Global `GameState` singleton for screen, question, score, wrong attempts, selection, and animation guards. |
-| `js/activities.js` | Current BODMAS Explore steps and six practice questions. |
-| `js/bodmas-locales.js` | BODMAS UI text, walkthrough annotations, hints, and rules in six languages. |
-| `js/i18n.js` | Locale loading, language resolution, translations, URL sync, and `localStorage` persistence. |
-| `js/frames.js` | Temporary frame layout switcher. |
-| `js/audio.js` | Button click, correct answer, wrong answer, and completion tone playback. |
-| `css/style.css` | Main design system and component styles. |
-| `css/responsive.css` | Tablet, laptop, phone landscape, foldable, portrait, and compact-height responsive rules. |
-| `css/frames.css` | Optional frame layout styles. |
+| `game.config.json` | Empty placeholder for future per-game metadata; the current app does not read it. |
+| `js/core/app.js` | Main game orchestrator for screen transitions, persistent controls, feedback timing, modals, and completion messaging. |
+| `js/core/state.js` | Global `GameState` singleton for screen, question, score, wrong attempts, selection, and animation guards. |
+| `js/core/utils.js` | Small DOM and timing helpers shared by core and content scripts. |
+| `js/core/content-renderer.js` | Thin bridge from core screen names to content page builders. |
+| `js/core/content-observer.js` | Reserved placeholder for future content observation hooks; currently empty. |
+| `js/content/pages.js` | Current BODMAS Explore steps, practice questions, and content screen markup builders. |
+| `js/content/validators.js` | Content-specific answer checking, feedback text, and summary scoring helpers. |
+| `js/content/animations.js` | BODMAS-specific explore, option-card, and celebration animations. |
+| `js/content/voiceovers.js` | Reserved placeholder for future voiceover/audio narration hooks; currently empty. |
+| `locales/content.json` | BODMAS UI text, walkthrough annotations, hints, and rules in six languages. |
+| `locales/core.json` | Shared locale metadata, language names, shared UI labels, and legacy place-value strings. |
+| `js/core/i18n.js` | Locale loading, language resolution, translations, URL sync, and `localStorage` persistence. |
+| `js/core/frames.js` | Temporary frame layout switcher. |
+| `js/core/audio.js` | Button click, correct answer, wrong answer, and completion tone playback. |
+| `css/core/style.css` | Main design system and shared shell/component styles. |
+| `css/content/pages.css` | Base content-screen, feedback, How to Play content, and summary styles. |
+| `css/core/responsive.css` | Shared responsive shell, board, modal, and decoration rules. |
+| `css/content/responsive.css` | Content-specific responsive rules for explore, practice, feedback, and summary views. |
+| `css/core/frames.css` | Optional frame layout styles. |
 | `test-postmessage.html` | Harness for testing the `GAME_COMPLETE` postMessage payload. |
 
 ---
@@ -218,7 +277,7 @@ When adding or changing a language, update both `supportedLanguages` in `locales
 - No automated test suite is included.
 - No build pipeline or package manifest is included.
 - The frame switcher is marked temporary and is visible in the current UI.
-- `locales.json` still contains many legacy place-value strings that are not rendered by the current BODMAS flow.
+- `locales/core.json` still contains many legacy place-value strings that are not rendered by the current BODMAS flow.
 - `bodmasRotateMsg` exists in translations, but there is no active rotate overlay in the current DOM.
 - The reset button currently works only during the practice screen.
 - Practice question feedback depends on matching translation keys such as `bodmasRule_q1` and `bodmasHint_q1`.

@@ -1,0 +1,308 @@
+@media (min-width: 768px) {
+  .options-grid {
+    gap: clamp(12px, 1.6vw, 18px);
+    max-width: clamp(460px, 60vw, 600px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .options-grid {
+    max-width: clamp(500px, 55vw, 640px);
+    gap: clamp(14px, 1.8vw, 20px);
+  }
+  .explore-annotation { max-width: clamp(460px, 52vw, 620px); }
+}
+
+@media (min-width: 1280px) {
+  .options-grid {
+    max-width: clamp(560px, 52vw, 680px);
+    gap: clamp(16px, 2vw, 22px);
+  }
+}
+
+@media (min-width: 1440px) {
+  .options-grid {
+    max-width: clamp(600px, 48vw, 720px);
+    gap: clamp(18px, 2.2vw, 26px);
+  }
+}
+
+@media (max-aspect-ratio: 4/3) {
+
+  .explore-screen {
+    gap: var(--space-xl);
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-xl);
+  }
+  .practice-screen {
+    gap: var(--space-lg);
+    padding-top: var(--space-lg);
+    padding-bottom: var(--space-lg);
+  }
+  .options-grid { max-width: clamp(460px, 70vw, 600px); }
+}
+
+@media (min-aspect-ratio: 16/10) {
+  .explore-screen {
+    padding: clamp(10px, 2vh, 24px) clamp(24px, 5vw, 72px);
+  }
+  .practice-screen {
+    padding: clamp(8px, 1.5vh, 20px) clamp(20px, 4vw, 56px);
+  }
+  .options-grid { max-width: clamp(480px, 52vw, 640px); }
+}
+
+@media (max-width: 1024px) and (max-height: 600px) {
+
+  .explore-screen  { gap: 8px;  padding: 6px 20px; }
+  .practice-screen { gap: 6px;  padding: 4px 16px; }
+  .loading-screen  { gap: 10px; padding: 12px; }
+
+  .explore-expression-wrap  { min-height: 40px; }
+  .explore-annotation-wrap  { min-height: 32px; }
+  .options-grid { max-width: 380px; gap: 8px; }
+  .option-card  { min-height: 52px; padding: 8px; }
+
+  /* Compact feedback toast */
+  .feedback-toast { font-size: var(--font-sm); padding: 8px 12px; }
+}
+
+@media (max-height: 520px) and (orientation: landscape) {
+
+  .loading-screen  { gap: 10px; padding: 8px; }
+  .explore-screen  { gap: 8px;  padding: 8px clamp(16px, 4vw, 48px); }
+  .practice-screen { gap: 6px;  padding: 6px clamp(12px, 3vw, 40px); }
+
+  .explore-expression-wrap  { min-height: 44px; }
+  .explore-annotation-wrap  { min-height: 30px; }
+}
+
+@media (orientation: portrait) {
+
+  /* Stack feedback char + toast vertically */
+  .feedback-overlay {
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: var(--space-sm);
+    padding-bottom: var(--space-sm);
+  }
+  .feedback-toast {
+    max-width: 88%;
+    text-align: center;
+  }
+  .feedback-char-gif {
+    align-self: center;
+    width: clamp(80px, 14vw, 140px);
+  }
+  .feedback-char-gif--correct {
+    width: clamp(90px, 16vw, 160px);
+    transform: none;
+  }
+
+  /* More vertical room for options */
+  .options-grid { max-width: clamp(380px, 75vw, 560px); }
+}
+
+@media (max-width: 480px) and (orientation: landscape) {
+  .options-grid    { max-width: 400px; gap: 8px; }
+}
+
+@media (max-width: 900px) {
+  .modal-character { display: none; }
+}
+
+@media (max-width: 900px) and (orientation: landscape) {
+
+  /* ════════════════════════════════════
+     EXPLORE SCREEN
+     Fix: justify-content:center wastes top/bottom space,
+          expression-wrap and annotation-wrap have large min-heights
+     ════════════════════════════════════ */
+  .explore-screen {
+    gap: clamp(4px, 1vh, 8px);
+    padding: clamp(6px, 1.5vh, 10px) clamp(12px, 3vw, 24px);
+  }
+
+  .explore-expression-wrap {
+    min-height: 32px;
+  }
+
+  .explore-annotation-wrap {
+    min-height: 22px;
+  }
+
+  .explore-annotation {
+    font-size: clamp(11px, 2.4vh, 13px);
+    line-height: 1.35;
+  }
+
+  .explore-step-counter {
+    font-size: clamp(10px, 2vh, 12px);
+  }
+
+  .btn-start-practice {
+    padding: 0 clamp(16px, 4vw, 28px);
+    font-size: clamp(12px, 2.5vh, 14px);
+  }
+
+  /* ════════════════════════════════════
+     PRACTICE SCREEN
+     Fix: question label, expression, and option cards all oversized
+     ════════════════════════════════════ */
+  .practice-screen {
+    gap: clamp(4px, 1vh, 8px);
+    padding: clamp(6px, 1.5vh, 10px) clamp(12px, 3vw, 24px);
+  }
+
+  .practice-q-label {
+    font-size: clamp(9px, 1.8vh, 11px);
+    letter-spacing: 0.08em;
+  }
+
+  .practice-expression {
+    font-size: var(--font-size-expr);
+  }
+
+  /* ════════════════════════════════════
+     ANSWER OPTIONS GRID (2×2)
+     Fix: option-card has min-height:clamp(64px,9vh,100px)
+          which at 412px = 64px × 2 rows = 128px + gaps
+     ════════════════════════════════════ */
+  .options-grid {
+    gap: clamp(5px, 1.2vh, 8px);
+    max-width: clamp(260px, 65vw, 440px);
+  }
+
+  .option-card {
+    min-height: clamp(36px, 8vh, 48px);
+    padding: clamp(4px, 1vh, 8px);
+    font-size: clamp(14px, 3vh, 18px);
+  }
+
+  /* ════════════════════════════════════
+     HOW TO PLAY MODAL
+     Fix: modal-card has overflow:visible — content truncates.
+          Make card scrollable with a max-height.
+     ════════════════════════════════════ */
+  #htp-card {
+    padding: clamp(10px, 2vh, 14px) clamp(12px, 2.5vw, 18px);
+    max-height: calc(100dvh - 20px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal-steps {
+    gap: clamp(4px, 1vh, 6px);
+  }
+
+  .modal-step {
+    padding: 5px 10px;
+    gap: 9px;
+  }
+
+  .modal-step__num {
+    width:  clamp(20px, 4.5vh, 26px);
+    height: clamp(20px, 4.5vh, 26px);
+    font-size: clamp(9px, 1.8vh, 11px);
+  }
+
+  .modal-step__text {
+    font-size: clamp(10px, 2vh, 12px);
+    line-height: 1.35;
+  }
+
+  /* Hide mascot character in landscape — it hangs outside the card */
+  .modal-character {
+    display: none;
+  }
+
+  .summary-card {
+    padding-top: clamp(10px, 2.5vh, 18px);
+  }
+
+  .summary-modal-title {
+    font-size: clamp(18px, 4vh, 24px);
+    margin-bottom: clamp(4px, 1vh, 8px);
+  }
+
+  .summary-stars {
+    gap: clamp(6px, 1.5vh, 10px);
+    margin-bottom: clamp(6px, 1.5vh, 10px);
+  }
+
+  .summary-star {
+    width: clamp(30px, 7vh, 42px);
+  }
+
+  .summary-stars img:nth-child(2) {
+    width: clamp(42px, 10vh, 56px);
+    margin-bottom: clamp(4px, 1vh, 8px);
+  }
+
+  .summary-score-badge {
+    padding: 6px 20px;
+    margin-bottom: clamp(6px, 1.5vh, 10px);
+  }
+
+  .summary-percent {
+    font-size: clamp(20px, 5vh, 28px);
+  }
+
+  .summary-score-label {
+    font-size: clamp(9px, 1.8vh, 11px);
+  }
+
+  .btn-summary-play {
+    padding: 0 clamp(20px, 5vw, 36px);
+    font-size: clamp(12px, 2.5vh, 14px);
+  }
+
+  /* ════════════════════════════════════
+     FEEDBACK OVERLAY
+     ════════════════════════════════════ */
+  .feedback-toast {
+    font-size: clamp(10px, 2vh, 12px);
+    padding: clamp(6px, 1.5vh, 10px) clamp(10px, 2.5vw, 16px);
+  }
+
+  .feedback-char-gif {
+    width: clamp(50px, 12vw, 80px);
+  }
+}
+
+@media (max-width: 812px) and (orientation: landscape) and (max-height: 375px) {
+
+  /* 4-column row on ultra-tight screens — avoids 2 rows of tall cards */
+  .options-grid {
+    grid-template-columns: repeat(4, 1fr);
+    max-width: 100%;
+    gap: 4px;
+  }
+
+  .option-card {
+    min-height: clamp(28px, 7vh, 36px);
+    font-size: clamp(11px, 2.5vh, 13px);
+    padding: 2px 4px;
+  }
+
+  .explore-screen,
+  .practice-screen {
+    gap: 3px;
+    padding: 4px 10px;
+  }
+
+  .explore-expression-wrap { min-height: 22px; }
+  .explore-annotation-wrap { min-height: 16px; }
+}
+
+@media (min-width: 800px) and (max-width: 1023px) and (orientation: landscape) and (min-height: 500px) {
+
+  .options-grid {
+    gap: var(--space-md);
+    max-width: clamp(360px, 55vw, 480px);
+  }
+
+  .option-card {
+    min-height: clamp(48px, 8vh, 64px);
+  }
+}
